@@ -159,15 +159,79 @@ const registry = new StructuralRegistrar({
 
 **Default remains "legacy".** Registry mode is opt-in only.
 
+## Phase E Status
+
+Phase E is **COMPLETE**. Registrum now supports persistence, serialization, and replay:
+
+- [x] E.1: Registrar Snapshot Schema
+- [x] E.2: Deterministic Serialization
+- [x] E.3: Registrar Rehydration (fail-closed)
+- [x] E.4: Transition Replay Engine (read-only)
+- [x] E.5: Persistence Parity Harness
+
+### Persistence API
+
+```typescript
+// Snapshot current state
+const snapshot = registrar.snapshot();
+
+// Serialize to JSON (deterministic)
+const json = serializeSnapshot(snapshot);
+
+// Rehydrate from snapshot (fail-closed)
+const rehydrated = StructuralRegistrar.fromSnapshot(parsed, {
+  mode: "legacy",
+  invariants: INITIAL_INVARIANTS,
+});
+
+// Replay transitions (read-only, proves determinism)
+const report = replay(transitions, {
+  mode: "legacy",
+  invariants: INITIAL_INVARIANTS,
+});
+```
+
+### Persistence Guarantees
+
+- Snapshots are bitwise deterministic
+- Rehydration is exact or fails completely
+- Replay produces identical outcomes to live execution
+- Legacy mode ≡ registry mode under replay
+
 ## Recommendation
 
-**PHASE C COMPLETE** — Ready for Phase D or final documentation lock.
+**PHASE E COMPLETE** — Registrum is now a historical infrastructure.
 
-The unified StructuralRegistrar with mode support provides:
-1. Full backward compatibility (legacy mode is default)
-2. Full forward compatibility (registry mode opt-in)
-3. No silent cutover (explicit mode selection required)
-4. Evidence-based migration path (124 passing tests)
+Any decision Registrum made can be:
+1. Serialized
+2. Reloaded
+3. Replayed
+4. Audited
+
+with identical outcomes.
+
+## Test Summary
+
+```
+Test Files: 12 passed
+Tests:      233 passed
+```
+
+| Category | Tests |
+|----------|-------|
+| Constitutional | 27 |
+| Registry system | 25 |
+| Identity parity | 13 |
+| Lineage parity | 14 |
+| Ordering parity | 12 |
+| Metadata parity | 19 |
+| Registry mode (C.5) | 14 |
+| Snapshot schema | 42 |
+| Serializer | 18 |
+| Rehydrator | 19 |
+| Replay | 18 |
+| Persistence parity | 12 |
+| **Total** | **233** |
 
 ## Cutover Checklist (Phase D)
 
@@ -185,9 +249,9 @@ Before making registry mode the default:
 
 | Field | Value |
 |-------|-------|
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Status** | LOCKED |
 | **Locked Date** | 2025-02-05 |
-| **Phase** | C Complete |
+| **Phase** | E Complete |
 
 *This document is binding once committed.*
