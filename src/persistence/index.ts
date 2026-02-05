@@ -26,6 +26,9 @@ export {
   // Serialization
   serializeSnapshot,
   deserializeSnapshot,
+  // Checksum (non-cryptographic, for integrity checking)
+  computeSnapshotChecksum32,
+  // @deprecated - use computeSnapshotChecksum32
   computeSnapshotHash,
 } from "./serializer";
 

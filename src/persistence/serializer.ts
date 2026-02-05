@@ -108,31 +108,52 @@ export function deserializeSnapshot(json: string): unknown {
 }
 
 // =============================================================================
-// Hash Computation
+// Checksum Computation (Non-Cryptographic)
 // =============================================================================
 
 /**
- * Compute a content hash of a snapshot.
+ * Compute a 32-bit checksum of a snapshot for integrity verification.
  *
- * This hash is based on the deterministic serialization.
- * It can be used to verify snapshot integrity.
+ * IMPORTANT DISTINCTION:
+ * - This is a CHECKSUM (djb2, non-cryptographic) for fast integrity checking
+ * - For cryptographic attestation, use attestation/generator.ts (SHA-256)
  *
- * Note: Uses a simple hash algorithm suitable for integrity checking.
- * Not cryptographically secure.
+ * Use cases:
+ * - Detecting corruption or accidental modification
+ * - Quick equality checks
+ * - Ordering verification
  *
- * @param snapshot - The snapshot to hash
- * @returns A hex string hash
+ * NOT suitable for:
+ * - Security/attestation (use SHA-256 via attestation module)
+ * - Collision resistance
+ * - External witnessing
+ *
+ * @param snapshot - The snapshot to checksum
+ * @returns An 8-character hex string (32-bit checksum)
  */
-export function computeSnapshotHash(snapshot: RegistrarSnapshotV1): string {
+export function computeSnapshotChecksum32(snapshot: RegistrarSnapshotV1): string {
   const json = serializeSnapshot(snapshot, false);
-  return simpleHash(json);
+  return djb2Checksum(json);
 }
 
 /**
- * Simple non-cryptographic hash function.
- * Based on djb2 algorithm.
+ * @deprecated Use computeSnapshotChecksum32 instead.
+ * Kept for backwards compatibility during transition.
  */
-function simpleHash(str: string): string {
+export function computeSnapshotHash(snapshot: RegistrarSnapshotV1): string {
+  return computeSnapshotChecksum32(snapshot);
+}
+
+/**
+ * DJB2 checksum algorithm (non-cryptographic).
+ *
+ * Properties:
+ * - Fast computation
+ * - 32-bit output
+ * - Good distribution for integrity checking
+ * - NOT collision-resistant (not suitable for security)
+ */
+function djb2Checksum(str: string): string {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
     hash = ((hash << 5) + hash) ^ str.charCodeAt(i);
