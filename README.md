@@ -187,7 +187,7 @@ See:
 | G | Complete | Governance framework |
 | H | Complete | Registry default, attestation enabled |
 
-**Test coverage**: 274 tests passing across 14 test suites
+**Test coverage**: 279 tests passing across 14 test suites
 
 Development has transitioned to stewardship. Future changes require governance.
 
