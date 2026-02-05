@@ -82,16 +82,19 @@ export interface Registrar {
   validate(target: State | Transition): ValidationReport;
 
   /**
-   * Return all active invariants.
+   * Return active invariants, optionally filtered by scope.
    *
    * Purpose:
    * - Inspectability
    * - Auditability
    * - Scientific transparency
+   * - External tool integration (read-only)
    *
    * Returns descriptors (without predicates) for safe serialization.
+   *
+   * @param scope - Optional filter to return only invariants of a specific scope
    */
-  listInvariants(): readonly InvariantDescriptor[];
+  listInvariants(scope?: InvariantScope): readonly InvariantDescriptor[];
 
   /**
    * Return the traceable ancestry of a State.

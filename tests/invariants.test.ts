@@ -481,6 +481,56 @@ describe("Registrar API", () => {
     }
   });
 
+  it("listInvariants filters by scope when provided", () => {
+    // Given: Registrar with invariants across all scopes
+
+    // When: Filter by state scope
+    const stateInvariants = registrar.listInvariants("state");
+
+    // Then: Only state-scope invariants returned
+    expect(stateInvariants.length).toBeGreaterThan(0);
+    for (const inv of stateInvariants) {
+      expect(inv.scope).toBe("state");
+    }
+
+    // When: Filter by registration scope
+    const registrationInvariants = registrar.listInvariants("registration");
+
+    // Then: Only registration-scope invariants returned
+    expect(registrationInvariants.length).toBeGreaterThan(0);
+    for (const inv of registrationInvariants) {
+      expect(inv.scope).toBe("registration");
+    }
+
+    // And: Combined filtered counts equal total
+    const transitionInvariants = registrar.listInvariants("transition");
+    const allInvariants = registrar.listInvariants();
+    expect(
+      stateInvariants.length +
+        transitionInvariants.length +
+        registrationInvariants.length
+    ).toBe(allInvariants.length);
+  });
+
+  it("listInvariants returns serializable descriptors without predicates", () => {
+    // Given: All invariants
+    const invariants = registrar.listInvariants();
+
+    // Then: Each has required descriptor fields
+    for (const inv of invariants) {
+      expect(typeof inv.id).toBe("string");
+      expect(["state", "transition", "registration"]).toContain(inv.scope);
+      expect(Array.isArray(inv.appliesTo)).toBe(true);
+      expect(["reject", "halt"]).toContain(inv.failureMode);
+      expect(typeof inv.description).toBe("string");
+    }
+
+    // And: Descriptors are JSON-serializable (no functions)
+    const serialized = JSON.stringify(invariants);
+    const deserialized = JSON.parse(serialized);
+    expect(deserialized.length).toBe(invariants.length);
+  });
+
   it("getLineage returns empty array for unknown state", () => {
     const lineage = registrar.getLineage("nonexistent");
     expect(lineage).toEqual([]);

@@ -22,6 +22,7 @@ import type {
   RegistrationResult,
   ValidationReport,
   InvariantDescriptor,
+  InvariantScope,
   LineageTrace,
   StateID,
   InvariantViolation,
@@ -196,10 +197,17 @@ export class RegistryDrivenRegistrar implements Registrar {
   }
 
   /**
-   * Return all active invariants.
+   * Return active invariants, optionally filtered by scope.
+   *
+   * @param scope - Optional filter to return only invariants of a specific scope
    */
-  listInvariants(): readonly InvariantDescriptor[] {
-    return this.invariantRegistry.invariants.map((inv) => ({
+  listInvariants(scope?: InvariantScope): readonly InvariantDescriptor[] {
+    const invariants = this.invariantRegistry.invariants;
+    const filtered = scope
+      ? invariants.filter((inv) => inv.scope === scope)
+      : invariants;
+
+    return filtered.map((inv) => ({
       id: inv.id,
       scope: inv.scope,
       appliesTo: inv.applies_to,

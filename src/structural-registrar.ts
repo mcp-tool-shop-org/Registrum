@@ -625,13 +625,21 @@ export class StructuralRegistrar implements Registrar {
   }
 
   /**
-   * Return all active invariants.
+   * Return active invariants, optionally filtered by scope.
    *
    * Returns descriptors (without predicates) for safe serialization.
+   * External tools can use this to display invariants without coupling to internals.
+   *
+   * @param scope - Optional filter to return only invariants of a specific scope
    */
-  listInvariants(): readonly InvariantDescriptor[] {
+  listInvariants(scope?: InvariantScope): readonly InvariantDescriptor[] {
     if (this.mode === "registry") {
-      return this.compiledRegistry!.invariants.map((inv) => ({
+      const invariants = this.compiledRegistry!.invariants;
+      const filtered = scope
+        ? invariants.filter((inv) => inv.scope === scope)
+        : invariants;
+
+      return filtered.map((inv) => ({
         id: inv.id,
         scope: inv.scope,
         appliesTo: inv.applies_to,
@@ -640,7 +648,11 @@ export class StructuralRegistrar implements Registrar {
       }));
     }
 
-    return this.invariants.map((inv) => ({
+    const filtered = scope
+      ? this.invariants.filter((inv) => inv.scope === scope)
+      : this.invariants;
+
+    return filtered.map((inv) => ({
       id: inv.id,
       scope: inv.scope,
       appliesTo: inv.appliesTo,
