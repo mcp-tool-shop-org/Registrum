@@ -1,109 +1,200 @@
 # Registrum
 
-## Mission Statement
+A governed, dual-witness, deterministic registrar with replayable history and optional external attestation.
 
-Registrum is a structural registrar for maintaining legibility in evolving systems.
+---
 
-It records, validates, and orders state transitions under explicit constraints so that structure remains interpretable as entropy accumulates. Registrum does not optimize, recommend, or decide meaning. It preserves the conditions under which meaning can be examined.
+## What Registrum Is
+
+Registrum is a **structural registrar** for maintaining legibility in evolving systems.
+
+It records, validates, and orders state transitions under explicit constraints so that structure remains interpretable as entropy accumulates.
+
+| Property | Meaning |
+|----------|---------|
+| Structural | Operates on form, not meaning |
+| Deterministic | Same inputs → same outputs, always |
+| Fail-closed | Invalid input causes hard failure, not partial recovery |
+| Replayable | Historical decisions can be re-executed with identical results |
+| Non-agentic | Never acts, decides, or optimizes |
 
 **Registrum ensures that change remains legible.**
 
 ---
 
-## What Registrum Is (and Is Not)
+## What Registrum Is Not
 
-**Registrum is:**
-
-- A registrar, not an engine
-- Constraint-based, not goal-driven
-- Deterministic, not adaptive
-- Structural, not semantic
-- Constitutional, not executive
-
-It operates like:
-
-- A type system for evolving state
-- A ledger for structural integrity
-- A schema authority for time-varying systems
-
-**Registrum is not:**
+Registrum is explicitly **not**:
 
 - An optimizer
 - An agent
+- A decision-maker
 - A controller
 - A recommender
-- A decision-maker
 - An intelligence
+- Adaptive or learning
+- Self-healing
 
 It never answers *what matters*.
 It only preserves the conditions under which that question remains answerable.
 
 ---
 
-## Non-Goals (Explicit)
-
-Registrum will never:
-
-- Optimize outcomes
-- Rank states as better or worse
-- Recommend actions
-- Adapt behavior based on success or failure
-- Infer intent or meaning
-- Collapse multiple signals into a scalar score
-
----
-
 ## Core Principle
 
-**Entropy is allowed. Illegibility is not.**
+> **Entropy is allowed. Illegibility is not.**
 
 Registrum does not reduce entropy globally.
 It constrains where entropy may exist so that identity, lineage, and structure remain inspectable over time.
 
 ---
 
-## Conceptual Architecture
-
-Registrum is built around a single constitutional component:
+## How Registrum Works
 
 ### Structural Registrar
 
-The Registrar:
+The registrar is the sole constitutional authority:
 
-- Validates all state transitions
-- Enforces explicit invariants
+- Validates all state transitions against 11 structural invariants
+- Enforces identity, lineage, and ordering constraints
 - Guarantees determinism and traceability
-- Surfaces violations without resolving them
+- Surfaces violations without resolving them (fail-closed)
 
-Everything else registers through it.
+Everything registers through it. Nothing bypasses it.
 
-### Supporting Subsystems (non-agentic)
+### The 11 Invariants
 
-- **Identity Lattice** — Deterministic identity and content-addressable references
-- **Lineage Graph** — Traceable parent-child relationships and provenance
-- **Temporal Attenuation Layer** — Explicit decay and persistence rules
-- **Representation Plane** — High-dimensional, bounded representations with explicit axes
-- **Neighborhood Index** — Metric-grounded similarity and locality
-- **Context Frames** — Scoped interpretation boundaries to prevent semantic bleed
+| Class | Count | Purpose |
+|-------|-------|---------|
+| Identity | 3 | Unique, immutable, content-addressed |
+| Lineage | 4 | Valid parentage, acyclic, traceable |
+| Ordering | 4 | Monotonic, gap-free, deterministic |
 
-None of these subsystems act independently.
-All transitions are registered, validated, and ordered.
+These invariants are constitutional. Changing them requires formal governance.
 
 ---
 
-## Why Registrum Exists
+## Dual Constitutional Witnesses
 
-Modern systems change faster than our ability to understand them.
+Registrum maintains **two independent invariant engines**:
 
-- Logs accumulate without structure
-- States evolve without lineage
-- Models change without visibility
-- Meaning drifts silently
+| Witness | Implementation | Purpose |
+|---------|----------------|---------|
+| Legacy | TypeScript predicates | Original, proven correct |
+| Registry | Compiled DSL (RPEG v1) | JSON-inspectable, auditable |
 
-Registrum exists to ensure that change does not outrun comprehension.
+### Why Two Witnesses?
 
-It does not make systems better.
-It makes them inspectable.
+- **Agreement is required** — Both must accept for a transition to be valid
+- **Disagreement halts** — Parity divergence stops the system (fail-closed)
+- **Independence is intentional** — Neither can override the other
+
+This is a safety and legibility feature, not technical debt.
+
+Dual-mode is indefinite. There is no plan to remove either witness.
+
+### Parity Evidence
+
+233 tests prove behavioral equivalence:
+- 58 parity tests across all invariant classes
+- 12 persistence parity tests (temporal stability)
+- Replay parity: live execution ≡ replayed execution
+
+---
+
+## History, Replay, and Auditability
+
+### Snapshots
+
+Registrum can snapshot its complete state:
+- Versioned schema (`RegistrarSnapshotV1`)
+- Content-addressed hashes
+- Deterministic serialization
+
+### Replay
+
+Historical decisions can be replayed:
+- Read-only execution against fresh registrar
+- Proves temporal determinism
+- Same transitions → same outcomes
+
+### Auditability
+
+Every structural judgment is:
+- Reproducible after the fact
+- Independent of execution context
+- Verifiable by any party with the snapshot
+
+---
+
+## External Attestation (Optional)
+
+Registrum may optionally emit cryptographic attestations to an external immutable ledger (such as XRPL) for public witnessing.
+
+| Property | Value |
+|----------|-------|
+| Default | Disabled |
+| Authority | Non-authoritative (witness only) |
+| Effect on behavior | None |
+
+Attestations record *that* Registrum decided.
+Registrum decides *what* is valid.
+
+**Authority flows inward. Witness flows outward.**
+
+See:
+- [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — Rationale
+- [`docs/ATTESTATION_SPEC.md`](docs/ATTESTATION_SPEC.md) — Specification
+
+---
+
+## Governance
+
+Registrum is governed under a **constitutional model**.
+
+| Principle | Meaning |
+|-----------|---------|
+| Behavioral guarantees > feature velocity | Correctness takes precedence |
+| Evidence-based changes only | No changes without proof |
+| Formal process required | Proposals, artifacts, decisions |
+
+### Current Status
+
+- **Technical phase**: Complete
+- **Feature freeze**: Active (`STOP.md`)
+- **Phase D proposal**: Pending approval
+
+All future changes are governance decisions, not engineering tasks.
+
+See:
+- [`docs/governance/PHILOSOPHY.md`](docs/governance/PHILOSOPHY.md) — Why governance exists
+- [`docs/governance/SCOPE.md`](docs/governance/SCOPE.md) — What is governed
+- [`docs/GOVERNANCE_HANDOFF.md`](docs/GOVERNANCE_HANDOFF.md) — Transition to governance
+
+---
+
+## Project Status
+
+| Phase | Status | Evidence |
+|-------|--------|----------|
+| A–C | Complete | Core registrar, parity harness |
+| E | Complete | Persistence, replay, temporal stability |
+| G | Complete | Governance framework |
+| D | Pending | Cutover proposal awaiting approval |
+
+**Test coverage**: 260 tests passing across 13 test suites
+
+---
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`WHAT_REGISTRUM_IS.md`](docs/WHAT_REGISTRUM_IS.md) | Identity definition |
+| [`PROVABLE_GUARANTEES.md`](docs/PROVABLE_GUARANTEES.md) | Formal claims with evidence |
+| [`FAILURE_BOUNDARIES.md`](docs/FAILURE_BOUNDARIES.md) | Hard failure conditions |
+| [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | Temporal guarantees |
+| [`MIGRATION_CRITERIA.md`](docs/MIGRATION_CRITERIA.md) | Cutover requirements |
 
 ---
 
