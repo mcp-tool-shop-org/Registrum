@@ -382,3 +382,32 @@ describe("Attestation Determinism", () => {
     }
   });
 });
+
+describe("Version Consistency (Packaging Invariant)", () => {
+  it("REGISTRUM_VERSION matches package.json version", async () => {
+    // This test enforces that the authoritative version in src/version.ts
+    // matches the published package.json version
+    const packageJson = await import("../../package.json", {
+      assert: { type: "json" },
+    });
+    expect(REGISTRUM_VERSION).toBe(packageJson.default.version);
+  });
+
+  it("REGISTRUM_VERSION is a valid semver string", () => {
+    // Basic semver format check: MAJOR.MINOR.PATCH
+    expect(REGISTRUM_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
+  it("attestation payload uses authoritative version", () => {
+    const snapshot = createTestSnapshot();
+    const payload = generateAttestationPayload(snapshot, TEST_REGISTRY_HASH, {
+      registrumVersion: REGISTRUM_VERSION,
+      mode: "dual",
+      parityStatus: "AGREED",
+      transitionFrom: 0,
+      transitionTo: 100,
+    });
+
+    expect(payload.registrum_version).toBe(REGISTRUM_VERSION);
+  });
+});

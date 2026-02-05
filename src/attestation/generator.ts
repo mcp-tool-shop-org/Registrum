@@ -18,12 +18,13 @@ import type {
   XrplAttestationMemos,
   XrplMemo,
 } from "./types.js";
+import { REGISTRUM_VERSION } from "../version.js";
 
 /** Current attestation specification version */
 export const ATTESTATION_VERSION = "1.0";
 
-/** Registrum version (should match package.json) */
-export const REGISTRUM_VERSION = "1.0.0";
+// Re-export version for backwards compatibility
+export { REGISTRUM_VERSION };
 
 /**
  * Generate an attestation payload from a snapshot.

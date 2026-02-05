@@ -8,7 +8,11 @@
  * - Registrar interface
  * - StructuralRegistrar implementation
  * - Initial invariants
+ * - Version constant
  */
+
+// Version (single authoritative source)
+export { REGISTRUM_VERSION } from "./version";
 
 // Core types
 export type {
