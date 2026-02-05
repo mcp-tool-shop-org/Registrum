@@ -195,6 +195,52 @@ See: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 
 ---
 
+## Getting Started
+
+### Installation
+
+```bash
+npm install registrum
+```
+
+### Basic Usage
+
+```typescript
+import { StructuralRegistrar } from "registrum";
+
+const registrar = new StructuralRegistrar();
+
+// Register a root state
+const result = registrar.register({
+  from: null,
+  to: { id: "state-1", structure: { version: 1 }, data: {} }
+});
+
+if (result.kind === "accepted") {
+  console.log(`Registered at index ${result.orderIndex}`);
+} else {
+  console.log(`Rejected: ${result.violations.map(v => v.invariantId)}`);
+}
+```
+
+### Running Examples
+
+Examples in the `examples/` directory are **illustrative demonstrations**, not stable API.
+
+They require [`tsx`](https://github.com/esbuild-kit/tsx) to run:
+
+```bash
+# Run the refusal-as-success example
+npm run example:refusal
+
+# Or directly with npx
+npx tsx examples/refusal-as-success.ts
+```
+
+**Note**: Examples rely on `npx tsx` (or `npx ts-node` with ESM support). These are not production dependencies — they are development/demonstration tools.
+
+---
+
 ## Documentation
 
 | Document | Purpose |
@@ -205,6 +251,7 @@ See: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 | [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | Temporal guarantees |
 | [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | Understanding dual-witness architecture |
 | [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | Dual-witness policy |
+| [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | Snapshot format (constitutional) |
 
 ---
 
