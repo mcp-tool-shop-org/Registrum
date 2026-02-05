@@ -162,10 +162,14 @@ function printResult(label: string, result: RegistrationResult): void {
     console.log();
     console.log("   Verdict:");
     for (const violation of result.violations) {
-      const isHalt = violation.message.includes("[HALT]");
+      // Classification is now a structured field, no message parsing needed
+      const classificationLabel =
+        violation.classification === "HALT"
+          ? "HALT (critical)"
+          : "REJECT";
       console.log(`   ┌─────────────────────────────────────`);
       console.log(`   │ Invariant: ${violation.invariantId}`);
-      console.log(`   │ Classification: ${isHalt ? "HALT (critical)" : "REJECT"}`);
+      console.log(`   │ Classification: ${classificationLabel}`);
       console.log(`   │ Reason: ${violation.message.replace("[HALT] ", "")}`);
       console.log(`   └─────────────────────────────────────`);
     }

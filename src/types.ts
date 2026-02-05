@@ -150,11 +150,31 @@ export interface Invariant {
 // =============================================================================
 
 /**
+ * Classification of how severe an invariant violation is.
+ * This is derived from the invariant's failureMode.
+ *
+ * - "REJECT": Transition is rejected, system continues normally
+ * - "HALT": Indicates systemic corruption, requires immediate attention
+ */
+export type ViolationClassification = "REJECT" | "HALT";
+
+/**
  * Describes a specific invariant violation.
+ *
+ * This is a structured verdict, not an exception.
+ * The violation IS the product — it names exactly what was refused and why.
  */
 export interface InvariantViolation {
   /** ID of the violated invariant */
   readonly invariantId: string;
+
+  /**
+   * Severity classification of this violation.
+   * Derived from the invariant's failureMode.
+   * - "REJECT": Normal rejection, system continues
+   * - "HALT": Critical violation indicating potential corruption
+   */
+  readonly classification: ViolationClassification;
 
   /** Human-readable explanation of the violation */
   readonly message: string;

@@ -279,8 +279,10 @@ export class StructuralRegistrar implements Registrar {
       const passed = invariant.predicate(input);
 
       if (!passed) {
+        const classification = invariant.failureMode === "halt" ? "HALT" : "REJECT";
         violations.push({
           invariantId: invariant.id,
+          classification,
           message: `Invariant violation: ${invariant.description}`,
         });
 
@@ -292,13 +294,10 @@ export class StructuralRegistrar implements Registrar {
 
     // If any violations, reject
     if (violations.length > 0) {
-      // For halt-level violations, we could throw, but for now we return rejected
-      // with a clear indication in the message
+      // For halt-level violations, mark with [HALT] prefix for backwards compatibility
       if (shouldHalt) {
-        // Mark halt violations clearly
         const haltViolations = violations.map((v) => {
-          const inv = this.invariants.find((i) => i.id === v.invariantId);
-          if (inv?.failureMode === "halt") {
+          if (v.classification === "HALT") {
             return {
               ...v,
               message: `[HALT] ${v.message}`,
@@ -343,8 +342,10 @@ export class StructuralRegistrar implements Registrar {
       const passed = evaluatePredicate(invariant.ast, context);
 
       if (!passed) {
+        const classification = invariant.failure_mode === "halt" ? "HALT" : "REJECT";
         violations.push({
           invariantId: invariant.id,
+          classification,
           message: `Invariant violation: ${invariant.description}`,
         });
 
@@ -358,8 +359,7 @@ export class StructuralRegistrar implements Registrar {
     if (violations.length > 0) {
       if (shouldHalt) {
         const haltViolations = violations.map((v) => {
-          const inv = registry.invariants.find((i) => i.id === v.invariantId);
-          if (inv?.failure_mode === "halt") {
+          if (v.classification === "HALT") {
             return {
               ...v,
               message: `[HALT] ${v.message}`,
@@ -475,6 +475,7 @@ export class StructuralRegistrar implements Registrar {
           if (!passed) {
             violations.push({
               invariantId: invariant.id,
+              classification: invariant.failureMode === "halt" ? "HALT" : "REJECT",
               message: `Invariant violation: ${invariant.description}`,
             });
           }
@@ -508,6 +509,7 @@ export class StructuralRegistrar implements Registrar {
           if (!passed) {
             violations.push({
               invariantId: invariant.id,
+              classification: invariant.failureMode === "halt" ? "HALT" : "REJECT",
               message: `Invariant violation: ${invariant.description}`,
             });
           }
@@ -538,6 +540,7 @@ export class StructuralRegistrar implements Registrar {
         if (!passed) {
           violations.push({
             invariantId: invariant.id,
+            classification: invariant.failure_mode === "halt" ? "HALT" : "REJECT",
             message: `Invariant violation: ${invariant.description}`,
           });
         }
@@ -554,6 +557,7 @@ export class StructuralRegistrar implements Registrar {
         if (!passed) {
           violations.push({
             invariantId: invariant.id,
+            classification: invariant.failure_mode === "halt" ? "HALT" : "REJECT",
             message: `Invariant violation: ${invariant.description}`,
           });
         }

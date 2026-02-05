@@ -19,6 +19,7 @@ export type {
   FailureMode,
   InvariantInput,
   Invariant,
+  ViolationClassification,
   InvariantViolation,
   RegistrationResult,
   ValidationReport,

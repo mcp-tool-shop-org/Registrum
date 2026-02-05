@@ -91,8 +91,10 @@ export class RegistryDrivenRegistrar implements Registrar {
       const passed = evaluatePredicate(invariant.ast, context);
 
       if (!passed) {
+        const classification = invariant.failure_mode === "halt" ? "HALT" : "REJECT";
         violations.push({
           invariantId: invariant.id,
+          classification,
           message: `Invariant violation: ${invariant.description}`,
         });
 
@@ -106,10 +108,7 @@ export class RegistryDrivenRegistrar implements Registrar {
     if (violations.length > 0) {
       if (shouldHalt) {
         const haltViolations = violations.map((v) => {
-          const inv = this.invariantRegistry.invariants.find(
-            (i) => i.id === v.invariantId
-          );
-          if (inv?.failure_mode === "halt") {
+          if (v.classification === "HALT") {
             return {
               ...v,
               message: `[HALT] ${v.message}`,
@@ -166,6 +165,7 @@ export class RegistryDrivenRegistrar implements Registrar {
         if (!passed) {
           violations.push({
             invariantId: invariant.id,
+            classification: invariant.failure_mode === "halt" ? "HALT" : "REJECT",
             message: `Invariant violation: ${invariant.description}`,
           });
         }
@@ -182,6 +182,7 @@ export class RegistryDrivenRegistrar implements Registrar {
         if (!passed) {
           violations.push({
             invariantId: invariant.id,
+            classification: invariant.failure_mode === "halt" ? "HALT" : "REJECT",
             message: `Invariant violation: ${invariant.description}`,
           });
         }
