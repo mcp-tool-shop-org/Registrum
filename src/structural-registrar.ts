@@ -290,9 +290,16 @@ export class StructuralRegistrar implements Registrar {
   getLineage(stateId: StateID): LineageTrace {
     const lineage: StateID[] = [];
     let currentId: StateID | null = stateId;
+    const visited = new Set<StateID>();
 
     // Traverse parent chain
     while (currentId !== null) {
+      // Prevent infinite loops (self-referential or circular)
+      if (visited.has(currentId)) {
+        break;
+      }
+      visited.add(currentId);
+
       const entry = this.registry.get(currentId);
       if (!entry) {
         // State not found — return what we have
