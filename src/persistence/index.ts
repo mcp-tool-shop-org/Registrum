@@ -40,3 +40,14 @@ export {
   RegistryMismatchError,
   ModeMismatchError,
 } from "./rehydrator";
+
+export {
+  // Replay
+  replay,
+  compareReplayReports,
+  createTransitionRecorder,
+  type ReplayReport,
+  type ReplayResult,
+  type ReplayOptions,
+  type TransitionRecorder,
+} from "./replay";
