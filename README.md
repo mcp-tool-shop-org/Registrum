@@ -178,6 +178,8 @@ See:
 
 ## Project Status
 
+**Registrum has reached a stable end-state.**
+
 | Phase | Status | Evidence |
 |-------|--------|----------|
 | A–C | Complete | Core registrar, parity harness |
@@ -186,6 +188,10 @@ See:
 | H | Complete | Registry default, attestation enabled |
 
 **Test coverage**: 274 tests passing across 14 test suites
+
+Development has transitioned to stewardship. Future changes require governance.
+
+See: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 
 ---
 
