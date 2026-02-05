@@ -325,11 +325,11 @@ describe("Snapshot Schema Validation (E.1)", () => {
         state_ids: ["A", "B"],
         lineage: { A: null, B: "A" },
         ordering: {
-          max_index: 5, // Wrong - should be 1
+          max_index: 5, // Wrong - highest assigned is 1
           assigned: { A: 0, B: 1 },
         },
       });
-      expect(() => validateSnapshot(snapshot)).toThrow(/max_index is 5 but should be 1/);
+      expect(() => validateSnapshot(snapshot)).toThrow(/max_index.*should equal highest assigned/);
     });
 
     it("rejects duplicate order indices", () => {
@@ -337,24 +337,25 @@ describe("Snapshot Schema Validation (E.1)", () => {
         state_ids: ["A", "B"],
         lineage: { A: null, B: "A" },
         ordering: {
-          max_index: 1,
+          max_index: 0,
           assigned: { A: 0, B: 0 }, // Duplicate
         },
       });
       expect(() => validateSnapshot(snapshot)).toThrow(/Order indices must be unique/);
     });
 
-    it("rejects gaps in order indices", () => {
+    it("accepts non-contiguous order indices", () => {
+      // This is valid: states can have non-contiguous indices
+      // (e.g., when the same ID is re-registered, overwriting previous entry)
       const snapshot = createValidSnapshot({
-        state_ids: ["A", "B", "C"],
-        lineage: { A: null, B: "A", C: "B" },
+        state_ids: ["A", "B"],
+        lineage: { A: null, B: "A" },
         ordering: {
-          max_index: 2,
-          assigned: { A: 0, B: 2, C: 3 }, // Gap at 1
+          max_index: 5, // Highest assigned is 5
+          assigned: { A: 2, B: 5 }, // Gap is OK
         },
       });
-      // This will fail either on uniqueness or gap detection
-      expect(() => validateSnapshot(snapshot)).toThrow();
+      expect(() => validateSnapshot(snapshot)).not.toThrow();
     });
   });
 });

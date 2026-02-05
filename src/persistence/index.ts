@@ -28,3 +28,15 @@ export {
   deserializeSnapshot,
   computeSnapshotHash,
 } from "./serializer";
+
+export {
+  // Rehydration
+  rehydrate,
+  validateRehydration,
+  type RehydrationOptions,
+  type RehydratedState,
+  type RehydratedStateEntry,
+  RehydrationError,
+  RegistryMismatchError,
+  ModeMismatchError,
+} from "./rehydrator";

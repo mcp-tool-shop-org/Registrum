@@ -41,6 +41,13 @@ import {
   computeLegacyRegistryHash,
   computeRegistryHash,
 } from "./persistence/snapshot";
+import {
+  rehydrate,
+  type RehydrationOptions,
+  RehydrationError,
+  RegistryMismatchError,
+  ModeMismatchError,
+} from "./persistence/rehydrator";
 
 /**
  * Registrar mode.
@@ -132,6 +139,65 @@ export class StructuralRegistrar implements Registrar {
         "StructuralRegistrar: registry mode requires compiledRegistry option"
       );
     }
+  }
+
+  // =========================================================================
+  // Static Factory Methods
+  // =========================================================================
+
+  /**
+   * Rehydrate a registrar from a snapshot.
+   *
+   * Reconstructs the registrar exactly as it was, or fails completely.
+   *
+   * Failure modes (all throw):
+   * - Invalid snapshot schema → SnapshotValidationError
+   * - Registry hash mismatch → RegistryMismatchError
+   * - Mode mismatch → ModeMismatchError
+   *
+   * No partial recovery. No warnings. No fallback.
+   *
+   * @param snapshot - Raw snapshot data (will be validated)
+   * @param options - Rehydration options (mode, invariants, compiledRegistry)
+   * @returns A new StructuralRegistrar with reconstructed state
+   */
+  static fromSnapshot(
+    snapshot: unknown,
+    options: RehydrationOptions
+  ): StructuralRegistrar {
+    // Rehydrate state (validates and throws on error)
+    const rehydratedState = rehydrate(snapshot, options);
+
+    // Create registrar with same options
+    const registrar = new StructuralRegistrar({
+      mode: options.mode,
+      invariants: options.invariants,
+      compiledRegistry: options.compiledRegistry,
+    });
+
+    // Inject rehydrated state
+    registrar.injectRehydratedState(rehydratedState);
+
+    return registrar;
+  }
+
+  /**
+   * Inject rehydrated state into the registrar.
+   * Private method used by fromSnapshot.
+   */
+  private injectRehydratedState(state: {
+    registry: Map<StateID, RegisteredState>;
+    currentOrderIndex: number;
+  }): void {
+    // Clear and repopulate registry
+    (this.registry as Map<StateID, RegisteredState>).clear();
+    for (const [id, entry] of state.registry) {
+      (this.registry as Map<StateID, RegisteredState>).set(id, entry);
+    }
+
+    // Set order index
+    (this as { currentOrderIndex: number }).currentOrderIndex =
+      state.currentOrderIndex;
   }
 
   /**

@@ -272,16 +272,27 @@ function validateSnapshotConsistency(
     }
   }
 
-  // max_index must equal (state_ids.length - 1) for non-empty, or -1 for empty
-  const expectedMaxIndex = stateIds.length > 0 ? stateIds.length - 1 : -1;
-  if (ordering.max_index !== expectedMaxIndex) {
-    throw new SnapshotValidationError(
-      `max_index is ${ordering.max_index} but should be ${expectedMaxIndex} for ${stateIds.length} states`,
-      "ordering.max_index"
-    );
+  // Validate max_index consistency
+  // max_index should be the highest assigned order index, or -1 if empty
+  if (stateIds.length === 0) {
+    if (ordering.max_index !== -1) {
+      throw new SnapshotValidationError(
+        `max_index should be -1 for empty registrar, got ${ordering.max_index}`,
+        "ordering.max_index"
+      );
+    }
+  } else {
+    // max_index should equal the highest order index
+    const maxAssigned = Math.max(...Object.values(ordering.assigned));
+    if (ordering.max_index !== maxAssigned) {
+      throw new SnapshotValidationError(
+        `max_index (${ordering.max_index}) should equal highest assigned index (${maxAssigned})`,
+        "ordering.max_index"
+      );
+    }
   }
 
-  // Order indices must be unique and cover [0, max_index]
+  // Order indices must be unique
   if (stateIds.length > 0) {
     const indices = Object.values(ordering.assigned);
     const indexSet = new Set(indices);
@@ -293,10 +304,11 @@ function validateSnapshotConsistency(
       );
     }
 
-    for (let i = 0; i <= ordering.max_index; i++) {
-      if (!indexSet.has(i)) {
+    // All indices must be non-negative
+    for (const idx of indices) {
+      if (idx < 0) {
         throw new SnapshotValidationError(
-          `Order index ${i} is missing from assigned indices`,
+          `Order index ${idx} is negative`,
           "ordering.assigned"
         );
       }
