@@ -52,8 +52,11 @@ import {
 /**
  * Registrar mode.
  *
- * - "legacy": Use TypeScript predicates from src/invariants.ts (default)
- * - "registry": Use compiled registry DSL from invariants/registry.json
+ * - "registry": Use compiled registry DSL from invariants/registry.json (default)
+ * - "legacy": Use TypeScript predicates from src/invariants.ts (secondary witness)
+ *
+ * As of Phase H, registry is the default constitutional authority.
+ * Legacy remains available as an independent secondary witness for parity enforcement.
  */
 export type RegistrarMode = "legacy" | "registry";
 
@@ -72,8 +75,8 @@ interface RegisteredState {
 export interface StructuralRegistrarOptions {
   /**
    * Registrar mode.
-   * - "legacy": Use TypeScript predicates (default)
-   * - "registry": Use compiled registry DSL
+   * - "registry": Use compiled registry DSL (default as of Phase H)
+   * - "legacy": Use TypeScript predicates (secondary witness)
    */
   readonly mode?: RegistrarMode;
 
@@ -89,7 +92,7 @@ export interface StructuralRegistrarOptions {
 }
 
 /**
- * StructuralRegistrar — The Phase 1 Registrar implementation.
+ * StructuralRegistrar — The constitutional Registrar implementation.
  *
  * This class implements the constitutional Registrar interface with:
  * - In-memory state tracking (no persistence)
@@ -97,9 +100,12 @@ export interface StructuralRegistrarOptions {
  * - Deterministic ordering
  * - Explicit failure surfacing
  *
- * Mode Support:
- * - "legacy" (default): Uses TypeScript predicate functions
- * - "registry": Uses compiled registry DSL evaluation
+ * Mode Support (Phase H):
+ * - "registry" (default): Uses compiled registry DSL evaluation
+ * - "legacy": Uses TypeScript predicate functions (secondary witness)
+ *
+ * Both engines are proven equivalent via parity testing.
+ * Disagreement between modes causes halt (fail-closed).
  */
 export class StructuralRegistrar implements Registrar {
   /**
@@ -129,7 +135,7 @@ export class StructuralRegistrar implements Registrar {
   private readonly compiledRegistry: CompiledInvariantRegistry | null;
 
   constructor(options: StructuralRegistrarOptions = {}) {
-    this.mode = options.mode ?? "legacy";
+    this.mode = options.mode ?? "registry";
     this.invariants = options.invariants ?? INITIAL_INVARIANTS;
     this.compiledRegistry = options.compiledRegistry ?? null;
 

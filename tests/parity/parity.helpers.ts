@@ -108,12 +108,16 @@ export function normalizeValidation(
 
 /**
  * Create a fresh pair of registrars for parity testing.
+ *
+ * As of Phase H, registry is default. This helper explicitly creates
+ * both modes for behavioral parity verification.
  */
 export function createRegistrarPair(): {
   legacy: StructuralRegistrar;
   registry: RegistryDrivenRegistrar;
 } {
-  const legacy = new StructuralRegistrar();
+  // Legacy mode requires explicit selection (secondary witness)
+  const legacy = new StructuralRegistrar({ mode: "legacy" });
 
   const registryPath = path.join(
     process.cwd(),

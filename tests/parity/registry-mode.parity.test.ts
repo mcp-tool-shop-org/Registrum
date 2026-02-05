@@ -116,15 +116,34 @@ describe("Registry Mode Parity (C.5)", () => {
   });
 
   describe("Mode initialization", () => {
-    it("legacy mode is default", () => {
-      const defaultRegistrar = new StructuralRegistrar();
-      expect(defaultRegistrar.getMode()).toBe("legacy");
+    it("registry mode is default (Phase H)", () => {
+      // Registry is now default — requires compiledRegistry
+      const registryPath = path.join(
+        process.cwd(),
+        "invariants",
+        "registry.json"
+      );
+      const raw = JSON.parse(fs.readFileSync(registryPath, "utf-8"));
+      const compiledRegistry = loadInvariantRegistry(raw);
+
+      const defaultRegistrar = new StructuralRegistrar({ compiledRegistry });
+      expect(defaultRegistrar.getMode()).toBe("registry");
     });
 
     it("registry mode requires compiledRegistry", () => {
       expect(() => {
         new StructuralRegistrar({ mode: "registry" });
       }).toThrow("registry mode requires compiledRegistry option");
+
+      // Also test default mode without registry
+      expect(() => {
+        new StructuralRegistrar();
+      }).toThrow("registry mode requires compiledRegistry option");
+    });
+
+    it("legacy mode is explicitly selectable (secondary witness)", () => {
+      const legacyRegistrar = new StructuralRegistrar({ mode: "legacy" });
+      expect(legacyRegistrar.getMode()).toBe("legacy");
     });
 
     it("modes are correctly set", () => {

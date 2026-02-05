@@ -52,7 +52,7 @@ describe("Invariant: state.identity.immutable", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("A.1.1 Accept: same identity preserved across transition", () => {
@@ -96,7 +96,7 @@ describe("Invariant: state.identity.explicit", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("A.2.1 Accept: explicit identity is valid", () => {
@@ -125,7 +125,7 @@ describe("Invariant: state.identity.unique", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("A.3.1 Accept: unique identity is accepted", () => {
@@ -175,7 +175,7 @@ describe("Invariant: state.lineage.explicit", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("B.1.1 Accept: declared parent is valid", () => {
@@ -226,7 +226,7 @@ describe("Invariant: state.lineage.parent_exists", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("B.2.1 Accept: parent exists in registry", () => {
@@ -265,7 +265,7 @@ describe("Invariant: state.lineage.single_parent", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("B.3.1 Accept: single parent reference", () => {
@@ -291,7 +291,7 @@ describe("Invariant: state.lineage.continuous", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("B.4.1 Accept: continuous lineage chain", () => {
@@ -332,7 +332,7 @@ describe("Invariant: ordering.total", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("C.1.1 Accept: all accepted states have order index", () => {
@@ -356,8 +356,8 @@ describe("Invariant: ordering.total", () => {
 describe("Invariant: ordering.deterministic", () => {
   it("C.2.1 Accept: same inputs produce same order", () => {
     // Given: Same transitions applied to two fresh registrars
-    const registrar1 = new StructuralRegistrar();
-    const registrar2 = new StructuralRegistrar();
+    const registrar1 = new StructuralRegistrar({ mode: "legacy" });
+    const registrar2 = new StructuralRegistrar({ mode: "legacy" });
 
     const s1 = createState("S1", { isRoot: true });
     const s2 = createState("S2", { isRoot: true });
@@ -382,7 +382,7 @@ describe("Invariant: ordering.monotonic", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("C.3.1 Accept: order indices increase monotonically", () => {
@@ -411,7 +411,7 @@ describe("Invariant: ordering.non_semantic", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("C.4.1 Accept: ordering uses only structural metadata", () => {
@@ -432,7 +432,7 @@ describe("Invariant: ordering.non_semantic", () => {
   it("C.4.2 Ordering does not depend on data field", () => {
     // Register in reverse alphabetical order of data content
     // Order should still be by registration sequence
-    const registrar1 = new StructuralRegistrar();
+    const registrar1 = new StructuralRegistrar({ mode: "legacy" });
 
     const sZ = createState("SZ", { isRoot: true }, { content: "ZZZ" });
     const sA = createState("SA", { isRoot: true }, { content: "AAA" });
@@ -455,7 +455,7 @@ describe("Registrar API", () => {
   let registrar: StructuralRegistrar;
 
   beforeEach(() => {
-    registrar = new StructuralRegistrar();
+    registrar = new StructuralRegistrar({ mode: "legacy" });
   });
 
   it("listInvariants returns all active invariants", () => {
@@ -541,9 +541,9 @@ describe("Determinism Guarantee", () => {
   it("Multiple registrars produce identical results for identical inputs", () => {
     // Create 3 independent registrars
     const registrars = [
-      new StructuralRegistrar(),
-      new StructuralRegistrar(),
-      new StructuralRegistrar(),
+      new StructuralRegistrar({ mode: "legacy" }),
+      new StructuralRegistrar({ mode: "legacy" }),
+      new StructuralRegistrar({ mode: "legacy" }),
     ];
 
     // Same sequence of transitions
@@ -575,7 +575,7 @@ describe("Determinism Guarantee", () => {
   });
 
   it("Order index starts at 0 and increments by 1", () => {
-    const registrar = new StructuralRegistrar();
+    const registrar = new StructuralRegistrar({ mode: "legacy" });
 
     const results = [
       registrar.register(
