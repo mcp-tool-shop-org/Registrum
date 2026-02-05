@@ -32,6 +32,17 @@ import type {
 import type { Registrar } from "./registrar";
 import { isState, isTransition } from "./registrar";
 import { INITIAL_INVARIANTS } from "./invariants";
+import type { CompiledInvariantRegistry } from "./registry/loader";
+import { evaluatePredicate } from "./registry/predicate/evaluator";
+import type { EvaluationContext } from "./registry/predicate/evaluator";
+
+/**
+ * Registrar mode.
+ *
+ * - "legacy": Use TypeScript predicates from src/invariants.ts (default)
+ * - "registry": Use compiled registry DSL from invariants/registry.json
+ */
+export type RegistrarMode = "legacy" | "registry";
 
 /**
  * Internal state entry for a registered state.
@@ -43,6 +54,28 @@ interface RegisteredState {
 }
 
 /**
+ * StructuralRegistrar configuration options.
+ */
+export interface StructuralRegistrarOptions {
+  /**
+   * Registrar mode.
+   * - "legacy": Use TypeScript predicates (default)
+   * - "registry": Use compiled registry DSL
+   */
+  readonly mode?: RegistrarMode;
+
+  /**
+   * Legacy invariants (used when mode is "legacy").
+   */
+  readonly invariants?: readonly Invariant[];
+
+  /**
+   * Compiled registry (required when mode is "registry").
+   */
+  readonly compiledRegistry?: CompiledInvariantRegistry;
+}
+
+/**
  * StructuralRegistrar — The Phase 1 Registrar implementation.
  *
  * This class implements the constitutional Registrar interface with:
@@ -50,6 +83,10 @@ interface RegisteredState {
  * - All 11 invariants from INVARIANTS.md
  * - Deterministic ordering
  * - Explicit failure surfacing
+ *
+ * Mode Support:
+ * - "legacy" (default): Uses TypeScript predicate functions
+ * - "registry": Uses compiled registry DSL evaluation
  */
 export class StructuralRegistrar implements Registrar {
   /**
@@ -64,12 +101,31 @@ export class StructuralRegistrar implements Registrar {
   private currentOrderIndex: number = 0;
 
   /**
-   * Active invariants.
+   * Operating mode.
+   */
+  private readonly mode: RegistrarMode;
+
+  /**
+   * Active invariants (legacy mode).
    */
   private readonly invariants: readonly Invariant[];
 
-  constructor(invariants: readonly Invariant[] = INITIAL_INVARIANTS) {
-    this.invariants = invariants;
+  /**
+   * Compiled registry (registry mode).
+   */
+  private readonly compiledRegistry: CompiledInvariantRegistry | null;
+
+  constructor(options: StructuralRegistrarOptions = {}) {
+    this.mode = options.mode ?? "legacy";
+    this.invariants = options.invariants ?? INITIAL_INVARIANTS;
+    this.compiledRegistry = options.compiledRegistry ?? null;
+
+    // Validate registry mode has required registry
+    if (this.mode === "registry" && !this.compiledRegistry) {
+      throw new Error(
+        "StructuralRegistrar: registry mode requires compiledRegistry option"
+      );
+    }
   }
 
   /**
@@ -85,6 +141,17 @@ export class StructuralRegistrar implements Registrar {
    * - Rejection with all violations
    */
   register(transition: Transition): RegistrationResult {
+    // Delegate to mode-specific implementation
+    if (this.mode === "registry") {
+      return this.registerWithRegistry(transition);
+    }
+    return this.registerWithLegacy(transition);
+  }
+
+  /**
+   * Register using legacy TypeScript predicates.
+   */
+  private registerWithLegacy(transition: Transition): RegistrationResult {
     // Collect all violations
     const violations: InvariantViolation[] = [];
     const appliedInvariants: string[] = [];
@@ -175,6 +242,78 @@ export class StructuralRegistrar implements Registrar {
     }
 
     // All invariants passed — register the state
+    return this.acceptTransition(transition, appliedInvariants);
+  }
+
+  /**
+   * Register using compiled registry DSL.
+   */
+  private registerWithRegistry(transition: Transition): RegistrationResult {
+    const registry = this.compiledRegistry!;
+    const violations: InvariantViolation[] = [];
+    const appliedInvariants: string[] = [];
+    let shouldHalt = false;
+
+    // Build evaluation context
+    const context = this.buildEvaluationContext(transition);
+
+    // Evaluate all invariants
+    for (const invariant of registry.invariants) {
+      appliedInvariants.push(invariant.id);
+
+      // Evaluate the predicate AST
+      const passed = evaluatePredicate(invariant.ast, context);
+
+      if (!passed) {
+        violations.push({
+          invariantId: invariant.id,
+          message: `Invariant violation: ${invariant.description}`,
+        });
+
+        if (invariant.failure_mode === "halt") {
+          shouldHalt = true;
+        }
+      }
+    }
+
+    // If any violations, reject
+    if (violations.length > 0) {
+      if (shouldHalt) {
+        const haltViolations = violations.map((v) => {
+          const inv = registry.invariants.find((i) => i.id === v.invariantId);
+          if (inv?.failure_mode === "halt") {
+            return {
+              ...v,
+              message: `[HALT] ${v.message}`,
+            };
+          }
+          return v;
+        });
+
+        return {
+          kind: "rejected",
+          violations: haltViolations,
+        };
+      }
+
+      return {
+        kind: "rejected",
+        violations,
+      };
+    }
+
+    // All invariants passed — register the state
+    return this.acceptTransition(transition, appliedInvariants);
+  }
+
+  /**
+   * Accept a transition and register the state.
+   * Common path for both legacy and registry modes.
+   */
+  private acceptTransition(
+    transition: Transition,
+    appliedInvariants: string[]
+  ): RegistrationResult {
     const orderIndex = this.currentOrderIndex;
     this.currentOrderIndex += 1;
 
@@ -195,6 +334,34 @@ export class StructuralRegistrar implements Registrar {
   }
 
   /**
+   * Build evaluation context for registry mode.
+   */
+  private buildEvaluationContext(transition: Transition): EvaluationContext {
+    return {
+      state: {
+        id: transition.to.id,
+        structure: transition.to.structure as Record<string, unknown>,
+      },
+      transition: {
+        from: transition.from,
+        to: {
+          id: transition.to.id,
+          structure: transition.to.structure as Record<string, unknown>,
+        },
+      },
+      registry: {
+        contains_state: (id: StateID | null) =>
+          id !== null && this.registry.has(id),
+        max_order_index: () => this.currentOrderIndex - 1,
+        compute_order_index: () => this.currentOrderIndex,
+      },
+      ordering: {
+        index: this.currentOrderIndex,
+      },
+    };
+  }
+
+  /**
    * Validate a State or Transition without registering it.
    *
    * Used for:
@@ -205,6 +372,16 @@ export class StructuralRegistrar implements Registrar {
    * Does not modify registrar state.
    */
   validate(target: State | Transition): ValidationReport {
+    if (this.mode === "registry") {
+      return this.validateWithRegistry(target);
+    }
+    return this.validateWithLegacy(target);
+  }
+
+  /**
+   * Validate using legacy TypeScript predicates.
+   */
+  private validateWithLegacy(target: State | Transition): ValidationReport {
     const violations: InvariantViolation[] = [];
 
     if (isState(target)) {
@@ -267,11 +444,120 @@ export class StructuralRegistrar implements Registrar {
   }
 
   /**
+   * Validate using compiled registry DSL.
+   */
+  private validateWithRegistry(target: State | Transition): ValidationReport {
+    const registry = this.compiledRegistry!;
+    const violations: InvariantViolation[] = [];
+
+    if (isState(target)) {
+      const context = this.buildStateValidationContext(target);
+
+      for (const invariant of registry.invariants) {
+        if (invariant.scope !== "state") continue;
+
+        const passed = evaluatePredicate(invariant.ast, context);
+        if (!passed) {
+          violations.push({
+            invariantId: invariant.id,
+            message: `Invariant violation: ${invariant.description}`,
+          });
+        }
+      }
+    } else if (isTransition(target)) {
+      const context = this.buildTransitionValidationContext(target);
+
+      for (const invariant of registry.invariants) {
+        if (invariant.scope !== "state" && invariant.scope !== "transition") {
+          continue;
+        }
+
+        const passed = evaluatePredicate(invariant.ast, context);
+        if (!passed) {
+          violations.push({
+            invariantId: invariant.id,
+            message: `Invariant violation: ${invariant.description}`,
+          });
+        }
+      }
+    }
+
+    return {
+      valid: violations.length === 0,
+      violations,
+    };
+  }
+
+  /**
+   * Build evaluation context for state validation.
+   */
+  private buildStateValidationContext(state: State): EvaluationContext {
+    return {
+      state: {
+        id: state.id,
+        structure: state.structure as Record<string, unknown>,
+      },
+      transition: {
+        from: null,
+        to: {
+          id: state.id,
+          structure: state.structure as Record<string, unknown>,
+        },
+      },
+      registry: {
+        contains_state: (id: StateID | null) =>
+          id !== null && this.registry.has(id),
+        max_order_index: () => this.currentOrderIndex - 1,
+        compute_order_index: () => this.currentOrderIndex,
+      },
+      ordering: null,
+    };
+  }
+
+  /**
+   * Build evaluation context for transition validation.
+   */
+  private buildTransitionValidationContext(
+    transition: Transition
+  ): EvaluationContext {
+    return {
+      state: {
+        id: transition.to.id,
+        structure: transition.to.structure as Record<string, unknown>,
+      },
+      transition: {
+        from: transition.from,
+        to: {
+          id: transition.to.id,
+          structure: transition.to.structure as Record<string, unknown>,
+        },
+      },
+      registry: {
+        contains_state: (id: StateID | null) =>
+          id !== null && this.registry.has(id),
+        max_order_index: () => this.currentOrderIndex - 1,
+        compute_order_index: () => this.currentOrderIndex,
+      },
+      ordering: null,
+    };
+  }
+
+  /**
    * Return all active invariants.
    *
    * Returns descriptors (without predicates) for safe serialization.
    */
   listInvariants(): readonly InvariantDescriptor[] {
+    if (this.mode === "registry") {
+      return this.compiledRegistry!.invariants.map((inv) => ({
+        id: inv.id,
+        scope: inv.scope,
+        appliesTo: inv.applies_to,
+        failureMode: inv.failure_mode,
+        description: inv.description,
+      }));
+    }
+
     return this.invariants.map((inv) => ({
       id: inv.id,
       scope: inv.scope,
@@ -339,5 +625,13 @@ export class StructuralRegistrar implements Registrar {
    */
   getCurrentOrderIndex(): number {
     return this.currentOrderIndex;
+  }
+
+  /**
+   * Get current operating mode.
+   * For testing purposes only.
+   */
+  getMode(): RegistrarMode {
+    return this.mode;
   }
 }

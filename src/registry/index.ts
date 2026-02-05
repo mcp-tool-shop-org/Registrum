@@ -28,6 +28,9 @@ export type {
   CompiledInvariant,
 } from "./loader";
 
+// Registry-Driven Registrar
+export { RegistryDrivenRegistrar } from "./registry-driven-registrar";
+
 // Errors
 export {
   RegistryError,
