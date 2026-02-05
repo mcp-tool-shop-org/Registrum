@@ -69,6 +69,17 @@ They do not require governance artifacts.
 
 ## Boundary Cases
 
+### External Attestation Mechanisms
+
+External attestation mechanisms (e.g., XRPL) are permitted only as non-authoritative witnesses.
+
+| Classification | Condition |
+|----------------|-----------|
+| Class A | Optional, disabled by default, no behavioral impact |
+| Class C | Any mechanism that influences validity, acceptance, or recovery |
+
+This closes the loophole permanently: attestation cannot become authoritative without governance.
+
 ### Documentation That Makes Claims
 
 Documentation that states guarantees (e.g., `PROVABLE_GUARANTEES.md`) is governed.
