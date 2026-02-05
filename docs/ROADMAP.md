@@ -40,25 +40,38 @@ Progress is measured by stability of guarantees, not feature velocity.
 - No APIs
 - No stack decisions
 
-**Status:** In progress.
+**Status:** Complete.
 
 ---
 
 ## Phase 1 — Registrar Core
 
-**Goal:** A minimal, correct registrar.
+**Goal:** A minimal, correct registrar. Make it impossible to mutate state without registration.
 
 **Exit Criteria:**
-- Structural Registrar interface defined
-- Explicit invariant definitions
+- Structural Registrar interface defined (register, validate, list_invariants, get_lineage)
+- Explicit invariant definitions (declarative, structural, boolean)
 - Deterministic registration of state transitions
 - Rejection and surfacing of invalid transitions
 - All tests pass with deterministic results
+- All state mutation requires registration
 
 **Non-Goals:**
 - No semantic interpretation
 - No optimization
 - No subsystem implementation
+- No persistence layer
+- No scoring, ranking, or preference APIs
+
+**Commit Plan:**
+1. Core Types (State, Transition, RegistrationResult, Invariant, ValidationReport)
+2. Registrar Skeleton (interface with stubbed methods)
+3. Invariant Evaluation Engine (pure constraint checking)
+4. Registration Logic (accept/reject, ordering, immutable results)
+5. Determinism Tests (same input → same output)
+6. Documentation Lock (Phase 1 completion note)
+
+**Status:** Not started.
 
 ---
 
