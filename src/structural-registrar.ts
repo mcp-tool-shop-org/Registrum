@@ -35,6 +35,12 @@ import { INITIAL_INVARIANTS } from "./invariants";
 import type { CompiledInvariantRegistry } from "./registry/loader";
 import { evaluatePredicate } from "./registry/predicate/evaluator";
 import type { EvaluationContext } from "./registry/predicate/evaluator";
+import type { RegistrarSnapshotV1 } from "./persistence/snapshot";
+import {
+  SNAPSHOT_VERSION,
+  computeLegacyRegistryHash,
+  computeRegistryHash,
+} from "./persistence/snapshot";
 
 /**
  * Registrar mode.
@@ -597,6 +603,59 @@ export class StructuralRegistrar implements Registrar {
     }
 
     return lineage;
+  }
+
+  // =========================================================================
+  // Persistence (Phase E)
+  // =========================================================================
+
+  /**
+   * Create a snapshot of the current registrar state.
+   *
+   * The snapshot contains all structural information needed to
+   * reconstruct the registrar exactly, and nothing more.
+   *
+   * Guarantees:
+   * - No semantic data included
+   * - No derived metrics
+   * - No caches or summaries
+   * - Deterministic output
+   */
+  snapshot(): RegistrarSnapshotV1 {
+    // Build state_ids in canonical order (by orderIndex)
+    const entries = Array.from(this.registry.values());
+    entries.sort((a, b) => a.orderIndex - b.orderIndex);
+    const stateIds = entries.map((e) => e.id);
+
+    // Build lineage map
+    const lineage: Record<StateID, StateID | null> = {};
+    for (const entry of entries) {
+      lineage[entry.id] = entry.parentId;
+    }
+
+    // Build ordering map
+    const assigned: Record<StateID, number> = {};
+    for (const entry of entries) {
+      assigned[entry.id] = entry.orderIndex;
+    }
+
+    // Compute registry hash
+    const registryHash =
+      this.mode === "registry"
+        ? computeRegistryHash(this.compiledRegistry!.registry_id)
+        : computeLegacyRegistryHash(this.invariants.map((i) => i.id));
+
+    return {
+      version: SNAPSHOT_VERSION,
+      registry_hash: registryHash,
+      mode: this.mode,
+      state_ids: stateIds,
+      lineage,
+      ordering: {
+        max_index: this.currentOrderIndex - 1,
+        assigned,
+      },
+    };
   }
 
   // =========================================================================

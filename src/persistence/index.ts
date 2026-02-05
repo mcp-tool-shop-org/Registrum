@@ -21,3 +21,10 @@ export {
   computeLegacyRegistryHash,
   computeRegistryHash,
 } from "./snapshot";
+
+export {
+  // Serialization
+  serializeSnapshot,
+  deserializeSnapshot,
+  computeSnapshotHash,
+} from "./serializer";
