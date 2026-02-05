@@ -21,10 +21,10 @@ The registry system may replace the legacy system **only if** all conditions bel
 
 ### 1. Behavioral Parity
 
-- [ ] All legacy invariants are represented in the registry
-- [ ] Parity tests exist for every invariant
-- [ ] No undocumented divergence exists
-- [ ] Parity tests pass for all 11 invariants across 3 groups:
+- [x] All legacy invariants are represented in the registry
+- [x] Parity tests exist for every invariant
+- [x] No undocumented divergence exists
+- [x] Parity tests pass for all 11 invariants across 3 groups:
   - Identity (3 invariants)
   - Lineage (4 invariants)
   - Ordering (4 invariants)
@@ -50,9 +50,9 @@ Any divergence must be:
 
 The registry system must demonstrably provide:
 
-- [ ] **Independent inspectability**: Registry can be read/validated without executing code
-- [ ] **Static rejection of unsafe predicates**: DSL validator rejects semantic access patterns
-- [ ] **No regression in test coverage**: All existing invariant tests continue to pass
+- [x] **Independent inspectability**: Registry can be read/validated without executing code
+- [x] **Static rejection of unsafe predicates**: DSL validator rejects semantic access patterns
+- [x] **No regression in test coverage**: All existing invariant tests continue to pass
 
 If these advantages are not realized, migration is unjustified.
 
@@ -180,5 +180,14 @@ Before making registry mode the default:
 - [ ] Migration documented in CHANGELOG
 
 ---
+
+## Document Version
+
+| Field | Value |
+|-------|-------|
+| **Version** | 1.0.0 |
+| **Status** | LOCKED |
+| **Locked Date** | 2025-02-05 |
+| **Phase** | C Complete |
 
 *This document is binding once committed.*
