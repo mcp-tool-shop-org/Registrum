@@ -1,65 +1,200 @@
 # Definitions
 
-This document locks terminology before code introduces ambiguity.
+## Purpose of This Document
 
-**Rule:** If a term is not in this file, it cannot appear in core code without discussion.
+This document defines the canonical meanings of core terms used in the Registrum project.
+
+These definitions are normative.
+Any implementation, documentation, or discussion that uses these terms must conform to the definitions below.
+
+**Rule:**
+Any term not defined in this document must not appear in core code without explicit review and amendment of this file.
 
 ---
 
-## State
+## Core Terms
 
-A complete, immutable snapshot of a system at a point in registration order.
-States do not evaluate as better or worse.
+### State
 
-## Transition
+A State is a complete, explicit representation of a system at a single logical moment.
 
-A change from one state to another.
-Transitions must be explicit, atomic, and registrable.
+A State:
 
-## Registration
+- is immutable once registered
+- contains no implicit meaning
+- may include structure, metadata, and references
+- is not evaluated as correct or incorrect by Registrum
 
-The act of recording a transition through the Registrar.
-Registration validates constraints and establishes ordering.
-Registration does not imply approval or endorsement.
+### Transition
 
-## Invariant
+A Transition is a proposed change from one State to another.
 
-An explicit condition that must hold for a transition to register.
-Invariants are declared, not inferred.
-Violation of an invariant surfaces a failure; it does not trigger correction.
+A Transition:
 
-## Constraint
+- is directional (from → to)
+- is not assumed to be valid
+- exists only as a proposal until registered
+- has no effect unless accepted by the Registrar
 
-A boundary on what transitions are allowed.
-Constraints are structural, not semantic.
-Constraints do not optimize; they exclude.
+### Registration
 
-## Registrar
+Registration is the act of submitting a Transition to the Registrar for validation and ordering.
 
-The constitutional authority that validates and orders all state transitions.
-The Registrar is deterministic, non-adaptive, and non-semantic.
-The Registrar does not act; it permits or rejects.
+Registration:
 
-## Structure
+- may succeed or fail
+- does not modify content
+- results in either acceptance or rejection
+- is deterministic given identical inputs and constraints
 
-The arrangement and relationships of elements within a state.
-Structure is what Registrum preserves.
-Structure does not imply meaning.
+### Registrar
 
-## Entropy (Operational)
+The Registrar is the constitutional component that validates and orders State Transitions.
 
-The accumulation of disorder or unpredictability in a system over time.
-Registrum does not reduce entropy globally.
-Registrum constrains where entropy may accumulate to preserve legibility.
+The Registrar:
 
-## Legibility
+- enforces explicit invariants
+- guarantees determinism
+- preserves traceability
+- may reject invalid transitions
+- does not interpret meaning
+- does not optimize outcomes
+- does not decide what should happen next
 
-The property of a system or state being interpretable.
-Legibility means that identity, lineage, and structure can be examined.
-Legibility does not mean simplicity or correctness.
+### Invariant
 
-## Subsystem
+An Invariant is a rule that must always hold for a State or Transition to be considered valid.
 
-A component that registers through the Registrar.
-Subsystems do not act independently.
-Subsystems expose structure; they do not decide.
+Invariants:
+
+- are explicit
+- are structural, not semantic
+- are enforced uniformly
+- are not learned or adapted
+- may cause rejection when violated
+
+### Constraint
+
+A Constraint is a declared limitation on allowable structure or ordering.
+
+Constraints:
+
+- define permissible forms of change
+- do not encode preferences or goals
+- do not rank alternatives
+- exist to preserve legibility, not correctness
+
+All invariants are constraints, but not all constraints are invariants.
+
+### Structure
+
+Structure refers to the inspectable relationships that make a State legible.
+
+Structure includes:
+
+- identity
+- ordering
+- lineage
+- bounded representation
+- explicit relationships
+
+Structure does not imply meaning, value, or correctness.
+
+### Entropy (Operational)
+
+In Registrum, entropy refers to increasing dispersion, uncertainty, or degrees of freedom in evolving State.
+
+This is an operational, not thermodynamic, definition.
+
+Entropy:
+
+- is expected
+- is not eliminated
+- is constrained to preserve legibility
+- is not treated as good or bad
+
+### Legibility
+
+Legibility is the property that a system's structure can be inspected, traced, and reasoned about.
+
+Legibility requires:
+
+- explicit identity
+- deterministic ordering
+- preserved lineage
+- bounded representations
+
+Legibility does not imply interpretability, usefulness, or correctness.
+
+### Subsystem
+
+A Subsystem is a bounded component that produces, transforms, or indexes State.
+
+A Subsystem:
+
+- has no independent authority
+- cannot mutate State directly
+- must register all transitions through the Registrar
+- may not bypass constraints
+
+### Lineage
+
+Lineage is the traceable relationship between States across Transitions.
+
+Lineage:
+
+- records parent–child relationships
+- does not imply improvement or degradation
+- exists solely for provenance and inspection
+
+### Determinism
+
+Determinism means that identical inputs, constraints, and ordering rules produce identical outcomes.
+
+Determinism:
+
+- is required
+- applies to registration and ordering
+- does not require predictability of content
+- must not be relaxed for convenience
+
+### Ordering
+
+Ordering is the explicit sequencing of accepted State Transitions.
+
+Ordering:
+
+- is enforced by the Registrar
+- is deterministic
+- does not imply priority, value, or importance
+
+---
+
+## Prohibited Terms (Without Explicit Definition)
+
+The following terms must not appear in core code or documentation unless formally defined and approved:
+
+- optimize / optimization
+- goal
+- reward
+- score
+- policy
+- agent
+- decision
+- intelligence
+- preference
+- better / worse
+
+Their presence is a strong indicator of scope violation.
+
+---
+
+## Status
+
+This document is normative and binding.
+
+Changes require:
+
+- explicit justification
+- review for semantic drift
+- consistency with SCIENTIFIC_POSITION.md
