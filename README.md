@@ -78,10 +78,13 @@ These invariants are constitutional. Changing them requires formal governance.
 
 Registrum maintains **two independent invariant engines**:
 
-| Witness | Implementation | Purpose |
-|---------|----------------|---------|
-| Legacy | TypeScript predicates | Original, proven correct |
-| Registry | Compiled DSL (RPEG v1) | JSON-inspectable, auditable |
+| Witness | Role | Implementation |
+|---------|------|----------------|
+| Registry | Primary authority | Compiled DSL (RPEG v1) |
+| Legacy | Secondary witness | TypeScript predicates |
+
+As of Phase H, **registry is the default constitutional engine**.
+Legacy remains as an independent secondary witness.
 
 ### Why Two Witnesses?
 
@@ -95,7 +98,7 @@ Dual-mode is indefinite. There is no plan to remove either witness.
 
 ### Parity Evidence
 
-233 tests prove behavioral equivalence:
+274 tests prove behavioral equivalence:
 - 58 parity tests across all invariant classes
 - 12 persistence parity tests (temporal stability)
 - Replay parity: live execution ≡ replayed execution
@@ -160,9 +163,9 @@ Registrum is governed under a **constitutional model**.
 
 ### Current Status
 
-- **Technical phase**: Complete
-- **Feature freeze**: Active (`STOP.md`)
-- **Phase D proposal**: Pending approval
+- **Phase H**: Complete (registry default, attestation enabled)
+- **Governance**: Active and enforced
+- **All changes**: Require formal governance process
 
 All future changes are governance decisions, not engineering tasks.
 
@@ -180,9 +183,9 @@ See:
 | A–C | Complete | Core registrar, parity harness |
 | E | Complete | Persistence, replay, temporal stability |
 | G | Complete | Governance framework |
-| D | Pending | Cutover proposal awaiting approval |
+| H | Complete | Registry default, attestation enabled |
 
-**Test coverage**: 260 tests passing across 13 test suites
+**Test coverage**: 274 tests passing across 14 test suites
 
 ---
 
@@ -194,7 +197,8 @@ See:
 | [`PROVABLE_GUARANTEES.md`](docs/PROVABLE_GUARANTEES.md) | Formal claims with evidence |
 | [`FAILURE_BOUNDARIES.md`](docs/FAILURE_BOUNDARIES.md) | Hard failure conditions |
 | [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | Temporal guarantees |
-| [`MIGRATION_CRITERIA.md`](docs/MIGRATION_CRITERIA.md) | Cutover requirements |
+| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | Understanding dual-witness architecture |
+| [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | Dual-witness policy |
 
 ---
 
