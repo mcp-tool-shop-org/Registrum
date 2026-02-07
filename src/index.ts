@@ -12,7 +12,7 @@
  */
 
 // Version (single authoritative source)
-export { REGISTRUM_VERSION } from "./version";
+export { REGISTRUM_VERSION } from "./version.js";
 
 // Core types
 export type {
@@ -29,14 +29,14 @@ export type {
   ValidationReport,
   InvariantDescriptor,
   LineageTrace,
-} from "./types";
+} from "./types.js";
 
 // Registrar interface and helpers
-export type { Registrar } from "./registrar";
-export { isState, isTransition, toInvariantInput } from "./registrar";
+export type { Registrar } from "./registrar.js";
+export { isState, isTransition, toInvariantInput } from "./registrar.js";
 
 // Implementation
-export { StructuralRegistrar } from "./structural-registrar";
+export { StructuralRegistrar } from "./structural-registrar.js";
 
 // Invariants
 export {
@@ -55,4 +55,4 @@ export {
   orderingDeterministicInvariant,
   orderingMonotonicInvariant,
   orderingNonSemanticInvariant,
-} from "./invariants";
+} from "./invariants.js";

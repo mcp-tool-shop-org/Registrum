@@ -14,7 +14,7 @@ export type {
   CallNode,
   BinaryOperator,
   UnaryOperator,
-} from "./ast";
+} from "./ast.js";
 
 export {
   isLiteralNode,
@@ -27,19 +27,19 @@ export {
   binary,
   unary,
   call,
-} from "./ast";
+} from "./ast.js";
 
 // Parser
-export { parsePredicate, ParseError } from "./parser";
+export { parsePredicate, ParseError } from "./parser.js";
 
 // Validator
 export {
   validatePredicate,
   validatePredicateSafe,
   ValidationError,
-} from "./validator";
-export type { ValidationResult } from "./validator";
+} from "./validator.js";
+export type { ValidationResult } from "./validator.js";
 
 // Evaluator
-export { evaluatePredicate, EvaluationError } from "./evaluator";
-export type { EvaluationContext } from "./evaluator";
+export { evaluatePredicate, EvaluationError } from "./evaluator.js";
+export type { EvaluationContext } from "./evaluator.js";

@@ -16,7 +16,6 @@ import type {
   AttestationOptions,
   AttestationMode,
   XrplAttestationMemos,
-  XrplMemo,
 } from "./types.js";
 import { REGISTRUM_VERSION } from "../version.js";
 
@@ -210,23 +209,40 @@ export function decodeXrplMemos(
 
   const rangeParts = result["registrum:range"]?.split("-");
 
-  return {
-    registrum_version: result["registrum:version"],
-    snapshot_version: result["registrum:snapshot_version"],
-    snapshot_hash: result["registrum:snapshot_hash"],
-    registry_hash: result["registrum:registry_hash"],
-    mode: result["registrum:mode"] as AttestationMode | undefined,
-    parity_status: result["registrum:parity"] as "AGREED" | "HALTED" | undefined,
-    transition_range: rangeParts
-      ? { from: parseInt(rangeParts[0], 10), to: parseInt(rangeParts[1], 10) }
-      : undefined,
-    state_count: result["registrum:state_count"]
-      ? parseInt(result["registrum:state_count"], 10)
-      : undefined,
-    ordering_max: result["registrum:ordering_max"]
-      ? parseInt(result["registrum:ordering_max"], 10)
-      : undefined,
-  };
+  const payload: Record<string, unknown> = {};
+
+  if (result["registrum:version"] !== undefined) {
+    payload["registrum_version"] = result["registrum:version"];
+  }
+  if (result["registrum:snapshot_version"] !== undefined) {
+    payload["snapshot_version"] = result["registrum:snapshot_version"];
+  }
+  if (result["registrum:snapshot_hash"] !== undefined) {
+    payload["snapshot_hash"] = result["registrum:snapshot_hash"];
+  }
+  if (result["registrum:registry_hash"] !== undefined) {
+    payload["registry_hash"] = result["registrum:registry_hash"];
+  }
+  if (result["registrum:mode"] !== undefined) {
+    payload["mode"] = result["registrum:mode"] as AttestationMode;
+  }
+  if (result["registrum:parity"] !== undefined) {
+    payload["parity_status"] = result["registrum:parity"] as "AGREED" | "HALTED";
+  }
+  if (rangeParts && rangeParts[0] !== undefined && rangeParts[1] !== undefined) {
+    payload["transition_range"] = {
+      from: parseInt(rangeParts[0], 10),
+      to: parseInt(rangeParts[1], 10),
+    };
+  }
+  if (result["registrum:state_count"] !== undefined) {
+    payload["state_count"] = parseInt(result["registrum:state_count"], 10);
+  }
+  if (result["registrum:ordering_max"] !== undefined) {
+    payload["ordering_max"] = parseInt(result["registrum:ordering_max"], 10);
+  }
+
+  return payload as Partial<AttestationPayload>;
 }
 
 /**

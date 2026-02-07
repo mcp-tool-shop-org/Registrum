@@ -13,7 +13,7 @@
  * If validation fails, the invariant is rejected BEFORE execution.
  */
 
-import type { ASTNode } from "./ast";
+import type { ASTNode } from "./ast.js";
 
 /**
  * Validation error class.

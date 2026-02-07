@@ -10,8 +10,8 @@
  * - Fails closed (errors become false)
  */
 
-import type { ASTNode } from "./ast";
-import type { StateID } from "../../types";
+import type { ASTNode } from "./ast.js";
+import type { StateID } from "../../types.js";
 
 /**
  * Evaluation context provided to predicates.

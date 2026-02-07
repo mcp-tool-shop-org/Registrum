@@ -19,8 +19,8 @@
  * - ❌ No wall-clock timestamps (environment-dependent)
  */
 
-import type { StateID } from "../types";
-import type { RegistrarMode } from "../structural-registrar";
+import type { StateID } from "../types.js";
+import type { RegistrarMode } from "../structural-registrar.js";
 
 // =============================================================================
 // Snapshot Schema Version 1

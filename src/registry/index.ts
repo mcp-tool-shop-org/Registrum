@@ -20,22 +20,22 @@
 // Loader
 export {
   loadInvariantRegistry,
-} from "./loader";
+} from "./loader.js";
 export type {
   RawInvariantRegistry,
   RawInvariantDefinition,
   CompiledInvariantRegistry,
   CompiledInvariant,
-} from "./loader";
+} from "./loader.js";
 
 // Registry-Driven Registrar
-export { RegistryDrivenRegistrar } from "./registry-driven-registrar";
+export { RegistryDrivenRegistrar } from "./registry-driven-registrar.js";
 
 // Errors
 export {
   RegistryError,
   InvariantDefinitionError,
-} from "./errors";
+} from "./errors.js";
 
 // Predicate DSL (re-export)
-export * from "./predicate/index";
+export * from "./predicate/index.js";

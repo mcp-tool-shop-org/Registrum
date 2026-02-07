@@ -10,7 +10,7 @@
  * - If two snapshots differ for the same structural state → bug, not tolerance
  */
 
-import type { RegistrarSnapshotV1 } from "./snapshot";
+import type { RegistrarSnapshotV1 } from "./snapshot.js";
 
 // =============================================================================
 // Serialization
@@ -56,8 +56,8 @@ function buildCanonicalObject(snapshot: RegistrarSnapshotV1): Record<string, unk
   // Get state_ids sorted by their order index (already canonical in snapshot)
   // The snapshot.state_ids should already be in order, but we verify
   const stateIdsByOrder = [...snapshot.state_ids].sort((a, b) => {
-    const orderA = snapshot.ordering.assigned[a];
-    const orderB = snapshot.ordering.assigned[b];
+    const orderA = snapshot.ordering.assigned[a] ?? 0;
+    const orderB = snapshot.ordering.assigned[b] ?? 0;
     return orderA - orderB;
   });
 
@@ -65,14 +65,14 @@ function buildCanonicalObject(snapshot: RegistrarSnapshotV1): Record<string, unk
   const lineageKeys = Object.keys(snapshot.lineage).sort();
   const lineage: Record<string, string | null> = {};
   for (const key of lineageKeys) {
-    lineage[key] = snapshot.lineage[key];
+    lineage[key] = snapshot.lineage[key] ?? null;
   }
 
   // Build ordering.assigned with sorted keys
   const assignedKeys = Object.keys(snapshot.ordering.assigned).sort();
   const assigned: Record<string, number> = {};
   for (const key of assignedKeys) {
-    assigned[key] = snapshot.ordering.assigned[key];
+    assigned[key] = snapshot.ordering.assigned[key] ?? 0;
   }
 
   // Build canonical object with alphabetically ordered fields

@@ -32,10 +32,11 @@ import type {
   RegistrationResult,
   ValidationReport,
   InvariantDescriptor,
+  InvariantScope,
   LineageTrace,
   StateID,
   InvariantInput,
-} from "./types";
+} from "./types.js";
 
 /**
  * The Registrar interface.

@@ -10,9 +10,9 @@
  * - Divergence is forbidden (indicates a bug)
  */
 
-import type { Transition, RegistrationResult, Invariant } from "../types";
-import { StructuralRegistrar, type RegistrarMode } from "../structural-registrar";
-import type { CompiledInvariantRegistry } from "../registry/loader";
+import type { Transition, RegistrationResult, Invariant } from "../types.js";
+import { StructuralRegistrar, type RegistrarMode } from "../structural-registrar.js";
+import type { CompiledInvariantRegistry } from "../registry/loader.js";
 
 // =============================================================================
 // Replay Report
@@ -136,8 +136,8 @@ export function replay(
   // Create fresh registrar for replay
   const registrar = new StructuralRegistrar({
     mode: options.mode,
-    invariants: options.invariants,
-    compiledRegistry: options.compiledRegistry,
+    ...(options.invariants !== undefined ? { invariants: options.invariants } : {}),
+    ...(options.compiledRegistry !== undefined ? { compiledRegistry: options.compiledRegistry } : {}),
   });
 
   // Track results
@@ -148,7 +148,7 @@ export function replay(
 
   // Replay each transition
   for (let i = 0; i < transitions.length; i++) {
-    const transition = transitions[i];
+    const transition = transitions[i]!;
     const result = registrar.register(transition);
 
     // Classify outcome
@@ -213,8 +213,8 @@ export function compareReplayReports(
 
   // Check per-result outcomes
   for (let i = 0; i < report1.results.length; i++) {
-    const r1 = report1.results[i];
-    const r2 = report2.results[i];
+    const r1 = report1.results[i]!;
+    const r2 = report2.results[i]!;
 
     if (r1.outcome !== r2.outcome) return false;
 
@@ -225,8 +225,8 @@ export function compareReplayReports(
 
     // For rejected results, check invariant IDs
     if (r1.result.kind === "rejected" && r2.result.kind === "rejected") {
-      const ids1 = r1.result.violations.map((v) => v.invariantId).sort();
-      const ids2 = r2.result.violations.map((v) => v.invariantId).sort();
+      const ids1 = r1.result.violations.map((v: { invariantId: string }) => v.invariantId).sort();
+      const ids2 = r2.result.violations.map((v: { invariantId: string }) => v.invariantId).sort();
       if (ids1.join(",") !== ids2.join(",")) return false;
     }
   }
@@ -311,7 +311,7 @@ export function createTransitionRecorder(): TransitionRecorder {
 
         return {
           index: i,
-          transition: transitions[i],
+          transition: transitions[i]!,
           result,
           outcome,
         };

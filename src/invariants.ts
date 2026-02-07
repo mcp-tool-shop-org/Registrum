@@ -21,8 +21,7 @@ import type {
   InvariantInput,
   State,
   Transition,
-  StateID,
-} from "./types";
+} from "./types.js";
 
 // =============================================================================
 // Helper Functions

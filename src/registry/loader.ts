@@ -16,10 +16,10 @@
  * - If any invariant is invalid → hard failure
  */
 
-import { RegistryError, InvariantDefinitionError } from "./errors";
-import { parsePredicate, ParseError } from "./predicate/parser";
-import { validatePredicate, ValidationError } from "./predicate/validator";
-import type { ASTNode } from "./predicate/ast";
+import { RegistryError, InvariantDefinitionError } from "./errors.js";
+import { parsePredicate, ParseError } from "./predicate/parser.js";
+import { validatePredicate, ValidationError } from "./predicate/validator.js";
+import type { ASTNode } from "./predicate/ast.js";
 
 // =============================================================================
 // Types

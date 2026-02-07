@@ -12,15 +12,14 @@
  * - Mode must be compatible
  */
 
-import type { StateID, Invariant } from "../types";
-import type { RegistrarSnapshotV1 } from "./snapshot";
+import type { StateID, Invariant } from "../types.js";
+import type { RegistrarSnapshotV1 } from "./snapshot.js";
 import {
   validateSnapshot,
-  SnapshotValidationError,
   computeLegacyRegistryHash,
   computeRegistryHash,
-} from "./snapshot";
-import type { CompiledInvariantRegistry } from "../registry/loader";
+} from "./snapshot.js";
+import type { CompiledInvariantRegistry } from "../registry/loader.js";
 
 // =============================================================================
 // Rehydration Errors

@@ -26,12 +26,12 @@ import type {
   LineageTrace,
   StateID,
   InvariantViolation,
-} from "../types";
-import type { Registrar } from "../registrar";
-import { isState, isTransition } from "../registrar";
-import type { CompiledInvariantRegistry, CompiledInvariant } from "./loader";
-import { evaluatePredicate } from "./predicate/evaluator";
-import type { EvaluationContext } from "./predicate/evaluator";
+} from "../types.js";
+import type { Registrar } from "../registrar.js";
+import { isState, isTransition } from "../registrar.js";
+import type { CompiledInvariantRegistry, CompiledInvariant } from "./loader.js";
+import { evaluatePredicate } from "./predicate/evaluator.js";
+import type { EvaluationContext } from "./predicate/evaluator.js";
 
 /**
  * Internal state entry for a registered state.
@@ -250,7 +250,7 @@ export class RegistryDrivenRegistrar implements Registrar {
    * Check if an invariant applies given the current context.
    */
   private invariantApplies(
-    invariant: CompiledInvariant,
+    _invariant: CompiledInvariant,
     _transition: Transition
   ): boolean {
     // All invariants are evaluated during registration

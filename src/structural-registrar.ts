@@ -23,31 +23,29 @@ import type {
   RegistrationResult,
   ValidationReport,
   InvariantDescriptor,
+  InvariantScope,
   LineageTrace,
   StateID,
   Invariant,
   InvariantViolation,
   InvariantInput,
-} from "./types";
-import type { Registrar } from "./registrar";
-import { isState, isTransition } from "./registrar";
-import { INITIAL_INVARIANTS } from "./invariants";
-import type { CompiledInvariantRegistry } from "./registry/loader";
-import { evaluatePredicate } from "./registry/predicate/evaluator";
-import type { EvaluationContext } from "./registry/predicate/evaluator";
-import type { RegistrarSnapshotV1 } from "./persistence/snapshot";
+} from "./types.js";
+import type { Registrar } from "./registrar.js";
+import { isState, isTransition } from "./registrar.js";
+import { INITIAL_INVARIANTS } from "./invariants.js";
+import type { CompiledInvariantRegistry } from "./registry/loader.js";
+import { evaluatePredicate } from "./registry/predicate/evaluator.js";
+import type { EvaluationContext } from "./registry/predicate/evaluator.js";
+import type { RegistrarSnapshotV1 } from "./persistence/snapshot.js";
 import {
   SNAPSHOT_VERSION,
   computeLegacyRegistryHash,
   computeRegistryHash,
-} from "./persistence/snapshot";
+} from "./persistence/snapshot.js";
 import {
   rehydrate,
   type RehydrationOptions,
-  RehydrationError,
-  RegistryMismatchError,
-  ModeMismatchError,
-} from "./persistence/rehydrator";
+} from "./persistence/rehydrator.js";
 
 /**
  * Registrar mode.
@@ -177,8 +175,8 @@ export class StructuralRegistrar implements Registrar {
     // Create registrar with same options
     const registrar = new StructuralRegistrar({
       mode: options.mode,
-      invariants: options.invariants,
-      compiledRegistry: options.compiledRegistry,
+      ...(options.invariants !== undefined ? { invariants: options.invariants } : {}),
+      ...(options.compiledRegistry !== undefined ? { compiledRegistry: options.compiledRegistry } : {}),
     });
 
     // Inject rehydrated state
@@ -202,7 +200,7 @@ export class StructuralRegistrar implements Registrar {
     }
 
     // Set order index
-    (this as { currentOrderIndex: number }).currentOrderIndex =
+    (this as unknown as { currentOrderIndex: number }).currentOrderIndex =
       state.currentOrderIndex;
   }
 

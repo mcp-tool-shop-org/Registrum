@@ -17,8 +17,8 @@
  *   argument_list  ::= expression ( "," expression )*
  */
 
-import type { ASTNode, BinaryOperator, UnaryOperator } from "./ast";
-import { literal, identifier, binary, unary, call } from "./ast";
+import type { ASTNode, BinaryOperator } from "./ast.js";
+import { literal, identifier, binary, unary, call } from "./ast.js";
 
 /**
  * Token types for lexer.
@@ -229,12 +229,6 @@ class Parser {
 
   private current(): Token {
     return this.tokens[this.pos] ?? { type: "EOF", value: "", position: -1 };
-  }
-
-  private peek(offset: number = 0): Token {
-    return (
-      this.tokens[this.pos + offset] ?? { type: "EOF", value: "", position: -1 }
-    );
   }
 
   private advance(): Token {

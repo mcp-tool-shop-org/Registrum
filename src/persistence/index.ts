@@ -20,7 +20,7 @@ export {
   // Hash computation
   computeLegacyRegistryHash,
   computeRegistryHash,
-} from "./snapshot";
+} from "./snapshot.js";
 
 export {
   // Serialization
@@ -30,7 +30,7 @@ export {
   computeSnapshotChecksum32,
   // @deprecated - use computeSnapshotChecksum32
   computeSnapshotHash,
-} from "./serializer";
+} from "./serializer.js";
 
 export {
   // Rehydration
@@ -42,7 +42,7 @@ export {
   RehydrationError,
   RegistryMismatchError,
   ModeMismatchError,
-} from "./rehydrator";
+} from "./rehydrator.js";
 
 export {
   // Replay
@@ -53,4 +53,4 @@ export {
   type ReplayResult,
   type ReplayOptions,
   type TransitionRecorder,
-} from "./replay";
+} from "./replay.js";
