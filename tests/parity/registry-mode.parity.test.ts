@@ -67,7 +67,7 @@ function normalizeResult(result: RegistrationResult): {
     };
   }
 
-  const hasHalt = result.violations.some((v) => v.message.includes("[HALT]"));
+  const hasHalt = result.violations.some((v) => v.classification === "HALT");
   const invariantIds = result.violations.map((v) => v.invariantId).sort();
 
   return {

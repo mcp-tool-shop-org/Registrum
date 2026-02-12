@@ -206,9 +206,15 @@ npm install registrum
 ### Basic Usage
 
 ```typescript
-import { StructuralRegistrar } from "registrum";
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
 
-const registrar = new StructuralRegistrar();
+// Option 1: Legacy mode (TypeScript predicates, no compiled registry needed)
+const registrar = new StructuralRegistrar({ mode: "legacy" });
+
+// Option 2: Registry mode (default — requires compiled registry)
+// const compiledRegistry = loadCompiledRegistry();
+// const registrar = new StructuralRegistrar({ compiledRegistry });
 
 // Register a root state
 const result = registrar.register({

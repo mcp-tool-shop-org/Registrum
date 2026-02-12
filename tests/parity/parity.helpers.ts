@@ -72,8 +72,8 @@ export function normalizeResult(result: RegistrationResult): NormalizedResult {
     };
   }
 
-  // Check for halt violations (marked with [HALT] prefix in messages)
-  const hasHalt = result.violations.some((v) => v.message.includes("[HALT]"));
+  // Check for halt violations via classification field
+  const hasHalt = result.violations.some((v) => v.classification === "HALT");
   const invariantIds = result.violations.map((v) => v.invariantId).sort();
 
   if (hasHalt) {

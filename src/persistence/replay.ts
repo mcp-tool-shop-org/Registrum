@@ -159,7 +159,7 @@ export function replay(
     } else {
       // Check for halt
       const hasHalt = result.violations.some((v) =>
-        v.message.includes("[HALT]")
+        v.classification === "HALT"
       );
       if (hasHalt) {
         outcome = "halted";
@@ -298,7 +298,7 @@ export function createTransitionRecorder(): TransitionRecorder {
           accepted++;
         } else {
           const hasHalt = result.violations.some((v) =>
-            v.message.includes("[HALT]")
+            v.classification === "HALT"
           );
           if (hasHalt) {
             outcome = "halted";

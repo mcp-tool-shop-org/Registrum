@@ -23,9 +23,9 @@ import type { AttestationPayload } from "../../src/attestation/index.js";
 
 // Test fixtures
 const createTestSnapshot = (): RegistrarSnapshotV1 => ({
-  version: 1,
+  version: "1.0",
   registry_hash: "abc123def456".padEnd(64, "0"),
-  mode: "dual",
+  mode: "legacy",
   state_ids: ["state-1", "state-2", "state-3"],
   lineage: {
     "state-1": null,
@@ -57,7 +57,7 @@ describe("Attestation Generator", () => {
       });
 
       expect(payload.registrum_version).toBe(REGISTRUM_VERSION);
-      expect(payload.snapshot_version).toBe("1");
+      expect(payload.snapshot_version).toBe("1.0");
       expect(payload.snapshot_hash).toMatch(/^[0-9a-f]{64}$/);
       expect(payload.registry_hash).toBe(TEST_REGISTRY_HASH);
       expect(payload.mode).toBe("dual");
