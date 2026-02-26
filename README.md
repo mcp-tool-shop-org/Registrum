@@ -1,4 +1,16 @@
-# Registrum
+<p align="center">
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/mcp-tool-shop-org/brand/main/logos/Registrum/readme.png" width="400" alt="Registrum">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@mcp-tool-shop/registrum"><img src="https://img.shields.io/npm/v/@mcp-tool-shop/registrum" alt="npm version"></a>
+  <a href="https://github.com/mcp-tool-shop-org/Registrum/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"></a>
+  <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
+</p>
 
 A governed, dual-witness, deterministic registrar with replayable history and optional external attestation.
 
@@ -200,7 +212,7 @@ See: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 ### Installation
 
 ```bash
-npm install registrum
+npm install @mcp-tool-shop/registrum
 ```
 
 ### Basic Usage
@@ -276,3 +288,7 @@ Registrum is successful when it becomes boring, dependable, and unsurprising.
 ## One-Sentence Summary
 
 Registrum is a structural registrar that preserves interpretability as systems evolve, ensuring that change remains legible under entropy.
+
+---
+
+Built by <a href="https://mcp-tool-shop.github.io/">MCP Tool Shop</a>
