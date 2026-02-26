@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.md">English</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@ Un registro determinista con doble verificación, gobernado y con un historial r
 
 ## ¿Qué es Registrum?
 
-Registrum es un ** النوم estructural** para mantener la legibilidad en sistemas en evolución.
+Registrum es un **registro estructural** para mantener la legibilidad en sistemas en evolución.
 
 Registra, valida y ordena las transiciones de estado bajo restricciones explícitas, de modo que la estructura permanezca interpretable a medida que aumenta la entropía.
 
@@ -27,7 +27,7 @@ Registra, valida y ordena las transiciones de estado bajo restricciones explíci
 | Estructural | Opera sobre la forma, no sobre el significado |
 | Determinista | Mismas entradas → mismos resultados, siempre |
 | Falla de forma segura | Una entrada inválida causa una falla total, no una recuperación parcial |
-| Reproducible | Las decisiones históricas se pueden volver a ejecutar con resultados idénticos |
+| Reproducible | Las decisiones históricas se pueden reejecutar con resultados idénticos |
 | No es un agente | Nunca actúa, decide ni optimiza |
 
 **Registrum garantiza que el cambio siga siendo legible.**
@@ -70,7 +70,7 @@ El registro es la única autoridad constitucional:
 - Valida todas las transiciones de estado contra 11 invariantes estructurales
 - Aplica restricciones de identidad, linaje y orden
 - Garantiza el determinismo y la trazabilidad
-- Revela las violaciones sin resolverlas (falla de forma segura)
+- Detecta violaciones sin resolverlas (falla de forma segura)
 
 Todo se registra a través de él. Nada lo evita.
 
@@ -86,13 +86,13 @@ Estos invariantes son constitucionales. Cambiarlos requiere una gobernanza forma
 
 ---
 
-## Doble testigo constitucional
+## Doble autoridad constitucional
 
 Registrum mantiene **dos motores de invariantes independientes**:
 
 | Testigo | Rol | Implementación |
 | --------- | ------ | ---------------- |
-| Registro | Autoridad primaria | DSL compilado (RPEG v1) |
+| Registro | Autoridad principal | DSL compilado (RPEG v1<unused2034>) |
 | Legado | Testigo secundario | Predicados de TypeScript |
 
 A partir de la Fase H, **el registro es el motor constitucional predeterminado**.
@@ -135,7 +135,7 @@ Las decisiones históricas pueden ser reproducidas:
 
 ### Auditabilidad
 
-Cada decisión estructural es:
+Cada juicio estructural es:
 - Reproducible a posteriori.
 - Independiente del contexto de ejecución.
 - Verificable por cualquier parte que tenga la instantánea.
@@ -149,7 +149,7 @@ Opcionalmente, Registrum puede emitir atestaciones criptográficas a un registro
 | Propiedad | Valor |
 | ---------- | ------- |
 | Por defecto | Deshabilitado |
-| Autoridad | No autoritativa (solo testigo) |
+| Autoridad | No autorizado (solo testigo) |
 | Efecto en el comportamiento | Ninguno |
 
 Las atestaciones registran *qué* decidió Registrum.
@@ -169,7 +169,7 @@ Registrum se rige bajo un **modelo constitucional**.
 
 | Principio | Significado |
 | ----------- | --------- |
-| Garantías de comportamiento > velocidad de las funciones | La corrección tiene prioridad. |
+| Garantías de comportamiento > Velocidad de las funciones | La corrección tiene prioridad. |
 | Solo cambios basados en evidencia. | No hay cambios sin prueba. |
 | Se requiere un proceso formal. | Propuestas, artefactos, decisiones. |
 
@@ -199,7 +199,7 @@ Ver:
 | G | Completado | Marco de gobernanza. |
 | H | Completado | Registro por defecto, atestación habilitada. |
 
-**Cobertura de pruebas**: 279 pruebas superadas en 14 suites de pruebas.
+**Cobertura de pruebas**: 279 pruebas superadas en 14 conjuntos de pruebas.
 
 El desarrollo ha pasado a la administración. Los cambios futuros requieren gobernanza.
 

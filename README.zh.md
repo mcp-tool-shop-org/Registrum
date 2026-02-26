@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.md">English</a> | <a href="README.es.md">Español</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@ Registrum 是一种**结构化注册器**，用于在不断演进的系统中保
 
 | 属性 | 含义 |
 | ---------- | --------- |
-| 结构化 | 作用于形式，而非含义 |
+| 结构化 | 作用于形式，而不是含义 |
 | 确定性 | 相同的输入始终产生相同的输出 |
 | 安全失败 | 无效的输入会导致完全失败，而不是部分恢复 |
 | 可重放 | 历史决策可以以完全相同的结果重新执行 |
@@ -95,7 +95,7 @@ Registrum 维护**两个独立的不变性引擎**：
 | 注册器 | 主要权威 | 编译的 DSL (RPEG v1) |
 | 遗留 | 次要验证器 | TypeScript 谓词 |
 
-从 Phase H 开始，**注册器是默认的宪法引擎**。
+在 Phase H 阶段，**注册器是默认的宪法引擎**。
 遗留版本仍然作为独立的次要验证器存在。
 
 ### 为什么需要两个验证器？
@@ -129,7 +129,7 @@ Registrum 可以创建其完整状态的快照：
 ### 重放
 
 可以重放历史决策：
-- 仅读模式，针对新的注册器
+- 仅限读取的执行，针对新的注册器
 - 证明时间上的确定性
 - 相同的转换 → 相同的结果
 
@@ -155,7 +155,7 @@ Registrum 可以选择性地向外部不可篡改的账本（例如 XRPL）发�
 证明记录了 Registrum 做出 *什么* 决定。
 Registrum 决定 *什么* 是有效的。
 
-**权限向内流动。 证明向外流动。**
+**权限向内流动。观察者向外流动。**
 
 参见：
 - [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — 理由
@@ -170,12 +170,12 @@ Registrum 遵循 **宪法模型** 进行治理。
 | 原则 | 含义 |
 | ----------- | --------- |
 | 行为保证 > 功能迭代速度 | 正确性优先 |
-| 仅基于证据的更改 | 没有证明，不允许更改 |
-| 需要正式流程 | 提案、工件、决策 |
+| 仅基于证据的更改 | 没有证明的更改 |
+| 需要正式流程 | 提案、artifact、决策 |
 
 ### 当前状态
 
-- **阶段 H**: 完成（注册器默认配置，启用证明）
+- **Phase H**: 完成（注册器默认配置，已启用证明）
 - **治理**: 活跃且执行
 - **所有更改**: 需要正式的治理流程
 
@@ -197,11 +197,11 @@ Registrum 遵循 **宪法模型** 进行治理。
 | A–C | 完成 | 核心注册器，对齐测试框架 |
 | E | 完成 | 持久性、重放、时间稳定性 |
 | G | 完成 | 治理框架 |
-| H | 完成 | 注册器默认配置，启用证明 |
+| H | 完成 | 注册器默认配置，已启用证明 |
 
 **测试覆盖率**: 14 个测试套件中通过了 279 个测试
 
-开发已过渡到维护阶段。 未来的更改需要治理。
+开发已过渡到维护阶段。未来的更改需要治理。
 
 参见：[`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 
@@ -269,13 +269,13 @@ npx tsx examples/refusal-as-success.ts
 | [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | 时间保证 |
 | [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | 理解双重验证架构 |
 | [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | 双重验证策略 |
-| [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | 快照格式（宪法） |
+| [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | 快照格式（宪法型） |
 
 ---
 
 ## 设计理念
 
-- 强调约束而非强大
+- 强调约束而非权力
 - 强调可读性而非性能
 - 强调约束而非启发式方法
 - 强调检查而非干预
