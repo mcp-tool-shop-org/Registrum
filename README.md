@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a>
 </p>
 
 <p align="center">
@@ -288,6 +288,35 @@ Registrum is successful when it becomes boring, dependable, and unsurprising.
 ## One-Sentence Summary
 
 Registrum is a structural registrar that preserves interpretability as systems evolve, ensuring that change remains legible under entropy.
+
+## Security & Data Scope
+
+| Aspect | Detail |
+|--------|--------|
+| **Data touched** | In-memory state transitions, optional JSON snapshots to local filesystem |
+| **Data NOT touched** | No network requests, no external APIs, no databases, no user credentials |
+| **Permissions** | Read/write only to user-specified snapshot paths (when persistence is used) |
+| **Network** | None — fully offline library (XRPL attestation disabled by default) |
+| **Telemetry** | None collected or sent |
+
+See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+
+## Scorecard
+
+| Category | Score |
+|----------|-------|
+| A. Security | 10 |
+| B. Error Handling | 10 |
+| C. Operator Docs | 10 |
+| D. Shipping Hygiene | 10 |
+| E. Identity (soft) | 10 |
+| **Overall** | **50/50** |
+
+> Full audit: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
+
+## License
+
+MIT
 
 ---
 

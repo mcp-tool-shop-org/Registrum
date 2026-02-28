@@ -1,6 +1,6 @@
 {
   "name": "@mcp-tool-shop/registrum",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A structural registrar for maintaining legibility in evolving systems",
   "type": "module",
   "main": "dist/index.js",
