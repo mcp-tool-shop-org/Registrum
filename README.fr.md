@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.md">English</a> | <a href="README.hi.md">हिन्दी</a>
 </p>
 
 <p align="center">
@@ -12,36 +12,23 @@
   <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
 </p>
 
-Un registre sécurisé, avec double authentification, fonctionnant de manière déterministe, offrant un historique consultable et la possibilité d'une attestation externe optionnelle.
+Un registre sécurisé, avec double authentification, fonctionnant de manière déterministe, doté d'un historique consultable et d'une option de certification externe.
 
 ---
 
 ## Qu'est-ce que Registrum ?
 
-Registrum est un **registre structuré** conçu pour garantir la lisibilité et la cohérence dans les systèmes en constante évolution.
+Registrum est un **registre structuré** conçu pour garantir la lisibilité et la pérennité des systèmes en constante évolution.
 
 Il enregistre, valide et ordonne les transitions d'état en respectant des contraintes précises, afin de garantir que la structure reste interprétable, même lorsque l'entropie augmente.
 
-| Bien immobilier.
-Propriété.
-Patrimoine.
-Possessions.
-Biens.
-Domaine.
-Foncier.
-Immobilier.
-(Selon le contexte) | Signification. |
+| Bien immobilier. | Signification. |
 | Bien sûr, veuillez me fournir le texte que vous souhaitez que je traduise. | Veuillez fournir le texte à traduire. |
 | Structurel. | Fonctionne sur la forme, et non sur le sens. |
 | Déterministe. | Les mêmes entrées produisent toujours les mêmes sorties. |
-| Arrêt en cas de défaillance.
-Ou :
-Mode de sécurité en cas de panne.
-Ou :
-Arrêt automatique en cas de défaut.
-(The best option depends on the specific context.) | Une entrée incorrecte provoque une erreur irréversible, et non une récupération partielle. |
+| Arrêt en cas de défaillance. | Une entrée incorrecte provoque une erreur irréversible, et non une récupération partielle. |
 | Rejouable. | Les décisions historiques peuvent être reproduites avec des résultats identiques. |
-| Non agentif. | Ne prend jamais de décisions, n'agit jamais et n'optimise rien. |
+| Non agentif. | Ne prend jamais de décisions, n'agit jamais et ne cherche jamais à optimiser. |
 
 Registrum veille à ce que les modifications restent lisibles.
 
@@ -78,7 +65,7 @@ Il limite les endroits où l'entropie peut se manifester, afin que l'identité, 
 
 ### Responsable de la structure
 
-Le greffier est l'unique autorité constitutionnelle :
+Le greffier est la seule autorité constitutionnelle compétente :
 
 - Valide toutes les transitions d'état par rapport à 11 invariants structurels.
 - Applique les contraintes d'identité, de traçabilité et d'ordre.
@@ -90,16 +77,53 @@ Tout passe par elle. Rien ne lui échappe.
 ### Les 11 invariants
 
 | Classe. | Compter. | Objectif. |
-| Veuillez fournir le texte à traduire. | "Please provide the English text you would like me to translate." | Veuillez fournir le texte à traduire. |
-| Identité. | 3 | Unique, immuable, basé sur le contenu. |
+| "The company is committed to providing high-quality products and services."
+
+"We are looking for a motivated and experienced candidate."
+
+"The meeting will take place on Tuesday at 10:00 AM."
+
+"Please contact us if you have any questions."
+
+"Thank you for your attention."
+-------
+
+"L'entreprise s'engage à fournir des produits et services de haute qualité."
+
+"Nous recherchons un candidat motivé et expérimenté."
+
+"La réunion aura lieu mardi à 10h00."
+
+"N'hésitez pas à nous contacter si vous avez des questions."
+
+"Nous vous remercions de votre attention." | "The company is committed to providing high-quality products and services."
+
+"We are constantly innovating to meet the evolving needs of our customers."
+
+"Our team is dedicated to providing excellent customer support."
+
+"We value transparency and ethical business practices."
+
+"We are proud of our commitment to sustainability."
+-------
+
+"L'entreprise s'engage à fournir des produits et services de haute qualité."
+
+"Nous innovons constamment pour répondre aux besoins changeants de nos clients."
+
+"Notre équipe est dévouée à offrir un excellent service client."
+
+"Nous accordons de l'importance à la transparence et aux pratiques commerciales éthiques."
+
+"Nous sommes fiers de notre engagement en faveur du développement durable." | Veuillez fournir le texte à traduire. |
+| Identité. | 3 | Unique, immuable, adressé par son contenu. |
 | Ascendance.
 Généalogie.
 Origine.
-Lignée.
-Descendance. | 4 | Ascendance valide, sans cycles, traçable. |
+Lignée. | 4 | Ascendance valide, sans cycles, traçable. |
 | Commande. | 4 | Monotone, sans lacunes, déterministe. |
 
-Ces invariants sont constitutionnels. Leur modification nécessite une procédure formelle et une gouvernance établie.
+Ces invariants sont constitutionnels. Leur modification nécessite une procédure formelle et une gouvernance appropriée.
 
 ---
 
@@ -108,9 +132,7 @@ Ces invariants sont constitutionnels. Leur modification nécessite une procédur
 Registrum maintient **deux moteurs invariants indépendants** :
 
 | Témoin. | Rôle. | Mise en œuvre. |
-| Veuillez fournir le texte à traduire. | Veuillez fournir le texte à traduire. | "The quick brown fox jumps over the lazy dog."
-----------------
-"Le rapide renard brun saute par-dessus le chien paresseux." |
+| Veuillez fournir le texte à traduire. | Veuillez fournir le texte à traduire. | "Please provide the English text you would like me to translate into French." |
 | Registre. | Autorité principale. | DSL compilée (RPEG version 1). |
 | Héritage. | Témoin secondaire. | Prédicats TypeScript. |
 
@@ -142,7 +164,7 @@ Le mode double est indéterminé. Il n'y a aucun projet de supprimer l'un ou l'a
 
 Registrum peut créer des instantanés de son état complet :
 - Schéma versionné (`RegistrarSnapshotV1`)
-- Hachages adressés par contenu
+- Hachages basés sur le contenu
 - Sérialisation déterministe
 
 ### Relecture
@@ -174,7 +196,7 @@ Registrum peut facultativement générer des attestations cryptographiques vers 
 Les attestations enregistrent *ce que* Registrum a décidé.
 Registrum décide *ce qui* est valide.
 
-**L'autorité est interne. La validation est externe.**
+**L'autorité est interne. Le témoignage est externe.**
 
 Voir :
 - [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — Justification
@@ -188,7 +210,7 @@ Registrum est géré selon un **modèle constitutionnel**.
 
 | Principe | Signification |
 | ----------- | --------- |
-| Garanties comportementales > vitesse de développement | La correction prime |
+| Garanties comportementales > vitesse de développement | La correction est prioritaire |
 | Changements basés sur des preuves uniquement | Aucun changement sans preuve |
 | Processus formel requis | Propositions, artefacts, décisions |
 
@@ -211,7 +233,7 @@ Voir :
 
 **Registrum a atteint un état final stable.**
 
-| Phase | Statut | Preuves |
+| Phase | Statut | Preuve |
 | ------- | -------- | ---------- |
 | A–C | Complète | Registre principal, outil de parité |
 | E | Complète | Persistance, relecture, stabilité temporelle |
@@ -274,7 +296,7 @@ npm run example:refusal
 npx tsx examples/refusal-as-success.ts
 ```
 
-**Note :** Les exemples utilisent `npx tsx` (ou `npx ts-node` avec prise en charge d'ESM). Ce ne sont pas des dépendances de production, mais des outils de développement/démonstration.
+**Note :** Les exemples utilisent `npx tsx` (ou `npx ts-node` avec prise en charge d'ESM). Ce ne sont pas des dépendances de production, mais des outils de développement/de démonstration.
 
 ---
 
@@ -297,8 +319,8 @@ npx tsx examples/refusal-as-success.ts
 - Modération plutôt que puissance
 - Lisibilité plutôt que performance
 - Contraintes plutôt que heuristiques
-- Inspection plutôt qu'intervention
-- Arrêt plutôt que prolongation infinie
+- Inspection plutôt que intervention
+- Arrêt plutôt que extension infinie
 
 Registrum réussit lorsqu'il devient banal, fiable et prévisible.
 

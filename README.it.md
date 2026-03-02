@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.pt-BR.md">Português (BR)</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.md">English</a>
 </p>
 
 <p align="center">
@@ -12,7 +12,7 @@
   <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
 </p>
 
-Un registro deterministico, con doppia verifica e storico riproducibile, dotato di attestazione esterna opzionale.
+Un registro governato, con doppia validazione, deterministico, dotato di una cronologia riproducibile e di un'opzione di attestazione esterna.
 
 ---
 
@@ -26,15 +26,15 @@ Registra, convalida e ordina le transizioni di stato in base a vincoli espliciti
 | ---------- | --------- |
 | Strutturale | Opera sulla forma, non sul significato |
 | Deterministico | Stessi input → stessi output, sempre |
-| Fail-closed | Un input non valido causa un errore irreversibile, non un recupero parziale |
+| Fail-closed (in caso di errore, si blocca) | Un input non valido causa un errore irreversibile, non un recupero parziale |
 | Riproducibile | Le decisioni storiche possono essere rieseguite con risultati identici |
-| Non-agente | Non agisce, non decide, non ottimizza |
+| Non agisce autonomamente | Non agisce, decide o ottimizza |
 
 **Registrum garantisce che il cambiamento rimanga leggibile.**
 
 ---
 
-## Cos'è Registrum, in realtà
+## Cosa Registrum non è
 
 Registrum **non è esplicitamente**:
 
@@ -48,7 +48,7 @@ Registrum **non è esplicitamente**:
 - In grado di auto-ripararsi
 
 Non risponde mai a *ciò che conta*.
-Preserva solo le condizioni in cui quella domanda possa rimanere rispondibile.
+Preserva solo le condizioni in cui quella domanda rimane rispondibile.
 
 ---
 
@@ -57,7 +57,7 @@ Preserva solo le condizioni in cui quella domanda possa rimanere rispondibile.
 > **L'entropia è consentita. L'illegibilità non lo è.**
 
 Registrum non riduce l'entropia globalmente.
-Limita i luoghi in cui l'entropia può esistere, in modo che l'identità, la genealogia e la struttura rimangano verificabili nel tempo.
+Limita dove l'entropia può esistere, in modo che l'identità, la genealogia e la struttura rimangano verificabili nel tempo.
 
 ---
 
@@ -72,13 +72,13 @@ Il registro è l'unica autorità costituzionale:
 - Garantisce il determinismo e la tracciabilità
 - Segnala le violazioni senza risolverle (fail-closed)
 
-Tutto viene registrato attraverso di esso. Nulla lo bypassa.
+Tutto viene registrato attraverso di esso. Nulla lo aggira.
 
-### I 11 Invarianti
+### I 11 invarianti
 
 | Classe | Conteggio | Scopo |
 | ------- | ------- | --------- |
-| Identità | 3 | Unica, immutabile, indirizzata al contenuto |
+| Identità | 3 | Unica, immutabile, indirizzabile tramite contenuto |
 | Genealogia | 4 | Parentela valida, aciclica, tracciabile |
 | Ordinamento | 4 | Monotono, senza lacune, deterministico |
 
@@ -86,22 +86,22 @@ Questi invarianti sono costituzionali. Modificarli richiede una governance forma
 
 ---
 
-## Doppie Autorità Costituzionali
+## Doppie autorità costituzionali
 
 Registrum mantiene **due motori di invarianti indipendenti**:
 
 | Autorità | Ruolo | Implementazione |
 | --------- | ------ | ---------------- |
 | Registro | Autorità primaria | DSL compilato (RPEG v1) |
-| Legacy | Autorità secondaria | Predicati TypeScript |
+| Legacy (eredità) | Autorità secondaria | Predicati TypeScript |
 
 A partire dalla Fase H, **il registro è il motore costituzionale predefinito**.
 Legacy rimane come autorità secondaria indipendente.
 
 ### Perché due autorità?
 
-- **È richiesto l'accordo** — Entrambe devono accettare affinché una transizione sia valida
-- **La discrepanza interrompe** — La divergenza di parità interrompe il sistema (fail-closed)
+- **È richiesta la concordanza** — Entrambe devono accettare affinché una transizione sia valida
+- **La discordanza interrompe** — La divergenza di parità interrompe il sistema (fail-closed)
 - **L'indipendenza è intenzionale** — Nessuna può sovrascrivere l'altra
 
 Questa è una caratteristica di sicurezza e leggibilità, non un debito tecnico.
@@ -135,7 +135,7 @@ Le decisioni storiche possono essere riprodotte:
 
 ### Verificabilità
 
-Ogni giudizio strutturale è:
+Ogni decisione strutturale è:
 - Riproducibile a posteriori
 - Indipendente dal contesto di esecuzione
 - Verificabile da qualsiasi parte in possesso dello snapshot
@@ -152,7 +152,7 @@ Registrum può opzionalmente generare attestazioni crittografiche verso un regis
 | Autorità | Non autoritativa (solo osservazione) |
 | Effetto sul comportamento | Nessuno |
 
-Le attestazioni registrano *il fatto* che Registrum abbia preso una decisione.
+Le attestazioni registrano *il fatto* che Registrum ha preso una decisione.
 Registrum decide *cosa* è valido.
 
 **L'autorità fluisce verso l'interno. L'osservazione fluisce verso l'esterno.**
@@ -199,7 +199,7 @@ Vedere:
 | G | Completata | Framework di governance |
 | H | Completata | Registro predefinito, attestazione abilitata |
 
-**Copertura dei test**: 279 test superati su 14 suite di test
+**Copertura dei test**: 279 test superati in 14 suite di test
 
 Lo sviluppo è passato alla gestione. Le future modifiche richiedono la governance.
 
@@ -279,9 +279,9 @@ npx tsx examples/refusal-as-success.ts
 - Leggibilità rispetto alle prestazioni
 - Vincoli rispetto alle euristiche
 - Ispezione rispetto all'intervento
-- Arresto rispetto a un'espansione infinita
+- Arresto rispetto a un'estensione infinita
 
-Registrum ha successo quando diventa noioso, affidabile e prevedibile.
+Registrum ha successo quando diventa banale, affidabile e prevedibile.
 
 ---
 

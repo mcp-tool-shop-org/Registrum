@@ -1,5 +1,5 @@
 {
-  "name": "@mcp-tool-shop/registrum",
+  "name": "@mcptoolshop/registrum",
   "version": "1.0.0",
   "description": "A structural registrar for maintaining legibility in evolving systems",
   "type": "module",
