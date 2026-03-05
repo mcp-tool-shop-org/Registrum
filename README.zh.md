@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.md">English</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.md">English</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 <p align="center">
@@ -12,52 +12,95 @@
   <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
 </p>
 
-一个受控、双重验证、确定性的注册器，具有可重放的历史记录，并提供可选的外部验证。
+<p align="center"><strong>管理された、二重検証による、決定論的なレジスタであり、再現可能な履歴を持ち、オプションで外部の認証機能も備えています。</strong></p>
 
 ---
 
 ## 什么是 Registrum
 
-Registrum 是一种**结构化注册器**，用于在不断演进的系统中保持可读性。
-
-它在明确的约束条件下记录、验证和排序状态转换，以确保结构在熵增加的过程中仍然可理解。
+Registrumは、**構造化されたレジスタ**です。これは、明示的な制約の下で状態遷移を記録、検証、および順序付けるライブラリであり、エントロピーが増加しても、構造が解釈可能な状態を維持します。
 
 | 属性 | 含义 |
-| ---------- | --------- |
-| 结构化 | 作用于形式，而不是含义 |
-| 确定性 | 相同的输入始终产生相同的输出 |
-| 安全失败 | 无效的输入会导致完全失败，而不是部分恢复 |
-| 可重放 | 历史决策可以以完全相同的结果重新执行 |
-| 非自主 | 从不采取行动、做出决策或进行优化 |
+|----------|---------|
+| **Structural** | 作用于形式，而非含义 |
+| **Deterministic** | 相同的输入始终产生相同的输出 |
+| **Fail-closed** | 无效的输入会导致系统完全停止，而不是部分恢复 |
+| **Replayable** | 历史决策可以以完全相同的结果重新执行 |
+| **Non-agentic** | 从不采取行动、做出决策或进行优化 |
 
-**Registrum 确保变化始终保持可读。**
+**Registrumは、変更が常に理解できる状態を維持します。**
 
 ---
 
-## Registrum 不是什么
+## なぜRegistrumを使うのか？
 
-Registrum 明确**不是**：
+システムは進化し、エントロピーが増加し、構造は劣化します。
 
-- 优化器
-- 代理
-- 决策者
-- 控制器
-- 推荐者
-- 智能系统
-- 自适应或学习系统
-- 自我修复系统
+多くのツールは、これに対応するために、インテリジェンス（最適化器、エージェント、自己修復機能など）を追加します。Registrumは、その逆のアプローチを取ります。**制約を追加します。**
 
-它永远不会回答“什么重要”。
-它只保留使该问题仍然可以回答的条件。
+- **ライブラリ開発者向け**：状態管理に構造的な保証を組み込み、ユーザーが手間なく可読性を実現できるようにします。
+- **監査が重要なシステム向け**：すべての状態遷移は、決定論的であり、再現可能であり、独立して検証可能です。
+- **複雑さを避けたいチーム向け**：Registrumは、無効な遷移を、構造化された結果とともに拒否し、静かに問題を隠蔽することはありません。
+
+その結果、システム全体で、ID、履歴、および順序が、変更の回数に関わらず、常に確認できる状態が維持されます。
 
 ---
 
 ## 核心原则
 
-> **允许熵的存在，但不允许不可读性。**
+> **エントロピーは許容されます。しかし、不可解さは許されません。**
 
-Registrum 不会全局减少熵。
-它限制了熵可能存在的范围，以确保身份、血缘和结构随着时间的推移保持可检查性。
+Registrumは、全体としてエントロピーを減少させるものではありません。
+Registrumは、エントロピーが存在できる場所を制限し、ID、履歴、および構造が時間とともに確認できる状態を維持します。
+
+---
+
+## Registrum 不是什么
+
+Registrumは、明示的に以下の機能ではありません。
+
+- 最適化器、エージェント、または意思決定機能
+- コントローラー、レコメンダー、またはインテリジェンス
+- 適応性、学習機能、または自己修復機能
+
+Registrumは、*何が重要か*という問いに決して答えることはありません。
+Registrumは、その問いが依然として答えられる状態を維持するだけです。
+
+---
+
+## アーキテクチャ概要
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  StructuralRegistrar                     │
+│                                                         │
+│  ┌───────────────┐         ┌──────────────────────┐     │
+│  │  Registry      │  parity │  Legacy              │     │
+│  │  (RPEG v1 DSL) │◄──────►│  (TS predicates)     │     │
+│  │  [primary]     │         │  [secondary witness] │     │
+│  └───────┬───────┘         └──────────┬───────────┘     │
+│          │         agree?             │                  │
+│          └────────────┬───────────────┘                  │
+│                       ▼                                  │
+│              11 Structural Invariants                    │
+│         ┌──────────┬──────────┬──────────┐              │
+│         │ Identity │ Lineage  │ Ordering │              │
+│         │  (3)     │  (4)     │  (4)     │              │
+│         └──────────┴──────────┴──────────┘              │
+│                       │                                  │
+│          ┌────────────┴────────────┐                     │
+│          ▼                         ▼                     │
+│     ✅ Accepted                ❌ Refused                │
+│     (stateId, orderIndex)      (violations[])            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Persistence: Snapshot · Replay · Rehydrate      │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Attestation (optional): XRPL witness ledger     │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -65,145 +108,85 @@ Registrum 不会全局减少熵。
 
 ### 结构化注册器
 
-注册器是唯一的宪法权威：
+レジスタは、唯一の権限を持つコンポーネントです。
 
-- 验证所有状态转换，以符合 11 个结构性不变性
-- 强制执行身份、血缘和排序约束
-- 保证确定性和可追溯性
-- 暴露违反情况，但不进行解决（安全失败）
+- すべての状態遷移を、**11の構造的な不変条件**に対して検証します。
+- ID、履歴、および順序に関する制約を適用します。
+- 決定論性と追跡可能性を保証します。
+- 問題を解決せずに、違反を検出し、報告します（フェイルセーフ）。
 
-所有内容都通过它进行注册。没有任何内容可以绕过它。
+すべてがこのレジスタを経由します。何もこのレジスタを迂回することはできません。
 
 ### 11 个不变性
 
 | 类别 | 计数 | 目的 |
-| ------- | ------- | --------- |
-| 身份 | 3 | 唯一、不可变、基于内容 |
-| 血缘 | 4 | 有效的父子关系、无循环、可追溯 |
-| 排序 | 4 | 单调、无间隙、确定性 |
+|-------|-------|---------|
+| **Identity** | 3 | 唯一、不可变、基于内容 |
+| **Lineage** | 4 | 有效的父子关系、无循环、可追溯 |
+| **Ordering** | 4 | 单调、无间隙、确定性 |
 
-这些不变性是宪法的。更改它们需要正式的治理。
+これらの不変条件は、憲法のようなものです。これらを変更するには、正式な承認が必要です。
 
 ---
 
 ## 双重宪法验证器
 
-Registrum 维护**两个独立的不变性引擎**：
+Registrumは、**2つの独立した不変条件エンジン**を維持しています。
 
 | 验证器 | 角色 | 实现 |
-| --------- | ------ | ---------------- |
-| 注册器 | 主要权威 | 编译的 DSL (RPEG v1) |
-| 遗留 | 次要验证器 | TypeScript 谓词 |
+|---------|------|----------------|
+| **Registry** | 主要权威 | 编译的 DSL (RPEG v1) |
+| **Legacy** | 次要验证器 | TypeScript 谓词 |
 
-在 Phase H 阶段，**注册器是默认的宪法引擎**。
-遗留版本仍然作为独立的次要验证器存在。
+Phase H以降、**レジスタはデフォルトの不変条件エンジン**となっています。
+従来のシステムは、独立した二次的な検証機能として残っています。
 
 ### 为什么需要两个验证器？
 
-- **需要达成一致** — 只有两个验证器都接受，状态转换才有效
-- **不一致会导致停止** — 验证器之间的不一致会导致系统停止（安全失败）
-- **独立性是故意的** — 任何一个验证器都不能覆盖另一个验证器
+- **合意が必要です**：遷移が有効であるためには、両方のエンジンが合意する必要があります。
+- **意見の不一致は停止を引き起こします**：不一致が発生すると、システムは停止します（フェイルセーフ）。
+- **独立性は意図的な設計です**：どちらのエンジンも、もう一方を上書きすることはできません。
 
-这是一个安全性和可读性功能，而不是技术债务。
-
-双模式是永久的。没有计划移除任何一个验证器。
+これは、技術的な負債ではなく、安全と可読性を確保するための機能です。
+二重検証モードは、恒久的なものです。どちらの検証機能も削除する予定はありません。
 
 ### 一致性证据
 
-274 个测试证明了行为上的等价性：
-- 58 个针对所有不变类的对齐测试
-- 12 个持久性对齐测试（时间稳定性）
-- 重放对齐：实时执行 ≡ 重放执行
+274個のテストが、動作の同等性を証明しています。
+- すべての不変条件クラスにわたる58個の整合性テスト
+- 12個の永続性整合性テスト（時間的な安定性）
+- 再生整合性：実行中の状態 ≡ 再生された状態
 
 ---
 
 ## 历史、重放和可审计性
 
-### 快照
-
-Registrum 可以创建其完整状态的快照：
-- 版本化的模式 (`RegistrarSnapshotV1`)
-- 基于内容哈希
-- 确定性序列化
-
-### 重放
-
-可以重放历史决策：
-- 仅限读取的执行，针对新的注册器
-- 证明时间上的确定性
-- 相同的转换 → 相同的结果
-
-### 可审计性
-
-每个结构性判断都是：
-- 可以在事后重现
-- 不依赖于执行环境
-- 任何拥有快照的方都可以验证
+| 機能 | 説明 |
+|------------|-------------|
+| **Snapshot** | バージョン管理されたスキーマ (`RegistrarSnapshotV1`)、コンテンツベースのハッシュ、決定論的なシリアライゼーション |
+| **Replay** | 新しいレジスタに対して、読み取り専用で再実行を行うことで、時間的な決定論を証明します。 |
+| **Audit** | すべての構造的な判断は、再現可能であり、コンテキストに依存せず、スナップショットを持つすべての関係者が検証可能です。 |
 
 ---
 
 ## 外部证明（可选）
 
-Registrum 可以选择性地向外部不可篡改的账本（例如 XRPL）发出加密证明，以便公开验证。
+Registrumは、オプションで、暗号化された認証情報を、外部の不変の台帳（XRPLなど）に送信し、公開検証を行うことができます。
 
 | 属性 | 值 |
-| ---------- | ------- |
+|----------|-------|
 | 默认 | 禁用 |
 | 权限 | 非权威（仅作为观察者） |
 | 对行为的影响 | 无 |
 
-证明记录了 Registrum 做出 *什么* 决定。
-Registrum 决定 *什么* 是有效的。
+認証情報は、Registrumが*どのような判断をしたか*を記録します。
+Registrumは、*何が有効であるか*を判断します。
 
-**权限向内流动。观察者向外流动。**
+**権限は内側から流れ、検証は外側へ流れます。**
 
-参见：
+詳細については、以下のドキュメントを参照してください。
 - [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — 理由
-- [`docs/ATTESTATION_SPEC.md`](docs/ATTESTATION_SPEC.md) — 规范
-
----
-
-## 治理
-
-Registrum 遵循 **宪法模型** 进行治理。
-
-| 原则 | 含义 |
-| ----------- | --------- |
-| 行为保证 > 功能迭代速度 | 正确性优先 |
-| 仅基于证据的更改 | 没有证明的更改 |
-| 需要正式流程 | 提案、artifact、决策 |
-
-### 当前状态
-
-- **Phase H**: 完成（注册器默认配置，已启用证明）
-- **治理**: 活跃且执行
-- **所有更改**: 需要正式的治理流程
-
-所有未来的更改都是治理决策，而不是工程任务。
-
-参见：
-- [`docs/governance/PHILOSOPHY.md`](docs/governance/PHILOSOPHY.md) — 治理存在的理由
-- [`docs/governance/SCOPE.md`](docs/governance/SCOPE.md) — 治理范围
-- [`docs/GOVERNANCE_HANDOFF.md`](docs/GOVERNANCE_HANDOFF.md) — 治理过渡
-
----
-
-## 项目状态
-
-**Registrum 已达到稳定的最终状态。**
-
-| 阶段 | 状态 | 证据 |
-| ------- | -------- | ---------- |
-| A–C | 完成 | 核心注册器，对齐测试框架 |
-| E | 完成 | 持久性、重放、时间稳定性 |
-| G | 完成 | 治理框架 |
-| H | 完成 | 注册器默认配置，已启用证明 |
-
-**测试覆盖率**: 14 个测试套件中通过了 279 个测试
-
-开发已过渡到维护阶段。未来的更改需要治理。
-
-参见：[`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
+- [`docs/ATTESTATION_SPEC.md`](docs/ATTESTATION_SPEC.md) — 仕様
 
 ---
 
@@ -215,79 +198,205 @@ Registrum 遵循 **宪法模型** 进行治理。
 npm install @mcp-tool-shop/registrum
 ```
 
-### 基本用法
+### クイックスタート
 
 ```typescript
 import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
-import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
 
-// Option 1: Legacy mode (TypeScript predicates, no compiled registry needed)
 const registrar = new StructuralRegistrar({ mode: "legacy" });
-
-// Option 2: Registry mode (default — requires compiled registry)
-// const compiledRegistry = loadCompiledRegistry();
-// const registrar = new StructuralRegistrar({ compiledRegistry });
 
 // Register a root state
 const result = registrar.register({
   from: null,
-  to: { id: "state-1", structure: { version: 1 }, data: {} }
+  to: { id: "state-1", structure: { version: 1 }, data: {} },
 });
 
 if (result.kind === "accepted") {
   console.log(`Registered at index ${result.orderIndex}`);
 } else {
-  console.log(`Rejected: ${result.violations.map(v => v.invariantId)}`);
+  // Structured refusal — the violations name which invariants failed
+  console.log(`Refused: ${result.violations.map((v) => v.invariantId)}`);
 }
+```
+
+### モード
+
+| モード | エンジン | 使用場面 |
+|------|--------|-------------|
+| `"legacy"` | TypeScript 谓词 | 迅速なプロトタイピング、外部依存関係なし |
+| `"registry"` (デフォルト) | コンパイルされたRPEG v1 DSL | 完全なデュアルウィットネスによる本番環境での利用 |
+
+```typescript
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
+
+// Registry mode (default) — compiled DSL + legacy as dual witnesses
+const compiledRegistry = loadCompiledRegistry();
+const registrar = new StructuralRegistrar({ compiledRegistry });
 ```
 
 ### 运行示例
 
-`examples/` 目录中的示例是 **演示示例**，而不是稳定的 API。
-
-它们需要 [`tsx`](https://github.com/esbuild-kit/tsx) 才能运行：
+[`examples/`](examples/) ディレクトリには、説明的なデモンストレーションが含まれています（安定版APIではありません）。
+これらは [`tsx`](https://github.com/esbuild-kit/tsx) を必要とします。
 
 ```bash
-# Run the refusal-as-success example
-npm run example:refusal
-
-# Or directly with npx
-npx tsx examples/refusal-as-success.ts
+npm run example:refusal        # Refusal-as-success demo
+npx tsx examples/refusal-as-success.ts   # Or run directly
 ```
 
-**注意：** 示例依赖于 `npx tsx`（或支持 ESM 的 `npx ts-node`）。这些不是生产环境的依赖项，而是开发/演示工具。
+---
+
+## APIクイックリファレンス
+
+### コアの機能
+
+```typescript
+// Implementation
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+
+// Types
+import type {
+  State,          // { id, structure, data }
+  Transition,     // { from, to, metadata? }
+  RegistrationResult,   // { kind: "accepted" | "refused", ... }
+  Invariant,      // { id, scope, check }
+  InvariantViolation,   // { invariantId, classification, message }
+} from "@mcp-tool-shop/registrum";
+
+// Invariants
+import {
+  INITIAL_INVARIANTS,     // All 11 invariants
+  getInvariantsByScope,   // Filter by "identity" | "lineage" | "ordering"
+  getInvariantById,       // Lookup by invariant ID
+} from "@mcp-tool-shop/registrum";
+
+// Version
+import { REGISTRUM_VERSION } from "@mcp-tool-shop/registrum";
+```
+
+### `StructuralRegistrar`
+
+| メソッド | 戻り値 | 説明 |
+|--------|---------|-------------|
+| `register(transition)` | `RegistrationResult` | 状態遷移を検証し、記録します。 |
+| `getState(id)` | `State \` | undefined` | 登録された状態をIDで取得します。 |
+| `getHistory()` | `Transition[]` | 受け入れられた遷移の完全な順序付き履歴。 |
+| `snapshot()` | `RegistrarSnapshotV1` | 決定論的で、コンテンツベースのスナップショット。 |
+
+---
+
+## 治理
+
+Registrum は、**憲法モデル**に基づいて運用されます。
+
+| 原则 | 含义 |
+|-----------|---------|
+| 行为保证 > 功能迭代速度 | 正确性优先 |
+| 仅基于证据的更改 | 没有证明的更改 |
+| 需要正式流程 | 提案、文档、决策 |
+
+### 当前状态
+
+- **フェーズH**: 完了 (registryのデフォルト、アテステーション有効)
+- **ガバナンス**: 活発で、実施されています。
+- **すべての変更**: 正式なガバナンスプロセスが必要です。
+
+今後のすべての変更は、エンジニアリングタスクではなく、ガバナンスの決定事項です。
+
+参照先:
+- [`docs/governance/PHILOSOPHY.md`](docs/governance/PHILOSOPHY.md) — ガバナンスの存在理由
+- [`docs/governance/SCOPE.md`](docs/governance/SCOPE.md) — ガバナンスの対象範囲
+- [`docs/GOVERNANCE_HANDOFF.md`](docs/GOVERNANCE_HANDOFF.md) — ガバナンスへの移行
+
+---
+
+## 项目状态
+
+**Registrum は、安定した最終状態に到達しました。**
+
+| 阶段 | 状态 | 证据 |
+|-------|--------|----------|
+| A–C | 完成 | 核心注册器，对齐测试框架 |
+| E | 完成 | 持久性、重放、时间稳定性 |
+| G | 完成 | 治理框架 |
+| H | 完成 | 注册器默认配置，已启用证明 |
+
+**テストカバレッジ**: 14のテストスイートで構成される279件のテストが合格しています。
+
+開発は、管理体制への移行が完了しました。今後の変更には、ガバナンスが必要です。
+
+参照先: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 
 ---
 
 ## 文档
 
 | 文档 | 目的 |
-| ---------- | --------- |
+|----------|---------|
 | [`WHAT_REGISTRUM_IS.md`](docs/WHAT_REGISTRUM_IS.md) | 身份定义 |
 | [`PROVABLE_GUARANTEES.md`](docs/PROVABLE_GUARANTEES.md) | 带有证据的正式声明 |
+| [`INVARIANTS.md`](docs/INVARIANTS.md) | 完全な不変の参照 |
 | [`FAILURE_BOUNDARIES.md`](docs/FAILURE_BOUNDARIES.md) | 严重故障条件 |
 | [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | 时间保证 |
-| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | 理解双重验证架构 |
+| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | デュアルウィットネスアーキテクチャのチュートリアル |
+| [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | 快照格式（宪法） |
 | [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | 双重验证策略 |
-| [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | 快照格式（宪法型） |
 
 ---
 
 ## 设计理念
 
-- 强调约束而非权力
-- 强调可读性而非性能
-- 强调约束而非启发式方法
-- 强调检查而非干预
-- 强调停止而非无限扩展
+- **権力に対する抑制**
+- **パフォーマンスよりも可読性**
+- **ヒューリスティクスよりも制約**
+- **介入よりも検査**
+- **無限の拡張よりも停止**
 
-当 Registrum 变得平淡、可靠且不出意外时，它就取得了成功。
+Registrum が成功するのは、退屈で、信頼でき、予測可能になる時です。
 
 ---
 
-## 一句话概括
+## セキュリティとデータ範囲
 
-Registrum 是一种结构化注册器，它在系统演进过程中保持可解释性，确保在熵的作用下，变更仍然是可理解的。
+| 側面 | 詳細 |
+|--------|--------|
+| **Data touched** | メモリ内での状態遷移、オプションでローカルファイルシステムへのJSONスナップショット |
+| **Data NOT touched** | ネットワークリクエストなし、外部APIなし、データベースなし、ユーザー認証情報なし |
+| **Permissions** | ユーザーが指定したスナップショットパスへのみ読み書き可能 (永続化を使用する場合) |
+| **Network** | なし — 完全オフラインのライブラリ (XRPLアテステーションはデフォルトで無効) |
+| **Telemetry** | 収集または送信されるデータはありません。 |
+
+脆弱性報告については、[SECURITY.md](SECURITY.md) を参照してください。
+
+---
+
+## 貢献
+
+Registrum は、ガバナンスを優先する貢献モデルを採用しています。すべての変更には、証拠に基づいた正式な提案が必要です。
+
+詳細な貢献に関する哲学とプロセスについては、[CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+
+---
+
+## スコアカード
+
+| カテゴリ | スコア |
+|----------|-------|
+| A. セキュリティ | 10 |
+| B. エラー処理 | 10 |
+| C. 運用者向けドキュメント | 10 |
+| D. 導入時の衛生 | 10 |
+| E. 識別 (ソフト) | 10 |
+| **Overall** | **50/50** |
+
+> 詳細な監査: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
+
+---
+
+## ライセンス
+
+MIT
 
 ---
 

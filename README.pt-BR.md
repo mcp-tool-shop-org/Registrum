@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.md">English</a>
 </p>
 
 <p align="center">
@@ -12,52 +12,95 @@
   <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
 </p>
 
-Um registro determinístico, com dupla validação e histórico reproduzível, com opção de validação externa.
+<p align="center"><strong>管理された、二重検証による、決定論的なレジスタであり、再現可能な履歴を持ち、オプションで外部の認証機能も備えています。</strong></p>
 
 ---
 
 ## O que é o Registrum
 
-O Registrum é um **registro estrutural** para manter a legibilidade em sistemas em evolução.
-
-Ele registra, valida e organiza as transições de estado sob restrições explícitas, para que a estrutura permaneça interpretável à medida que a entropia aumenta.
+Registrumは、**構造化されたレジスタ**です。これは、明示的な制約の下で状態遷移を記録、検証、および順序付けるライブラリであり、エントロピーが増加しても、構造が解釈可能な状態を維持します。
 
 | Propriedade | Significado |
-| ---------- | --------- |
-| Estrutural | Opera na forma, não no significado |
-| Determinístico | Mesmas entradas → mesmas saídas, sempre |
-| Falha segura | Entrada inválida causa uma falha completa, não uma recuperação parcial |
-| Reproduzível | Decisões históricas podem ser reexecutadas com resultados idênticos |
-| Não é um agente | Nunca age, decide ou otimiza |
+|----------|---------|
+| **Structural** | Opera na forma, não no significado |
+| **Deterministic** | Mesmas entradas → mesmas saídas, sempre |
+| **Fail-closed** | Entrada inválida causa uma falha completa, não uma recuperação parcial |
+| **Replayable** | Decisões históricas podem ser reexecutadas com resultados idênticos |
+| **Non-agentic** | Nunca age, decide ou otimiza |
 
-**O Registrum garante que a mudança permaneça legível.**
+**Registrumは、変更が常に理解できる状態を維持します。**
 
 ---
 
-## O que o Registrum Não É
+## なぜRegistrumを使うのか？
 
-O Registrum **não é explicitamente**:
+システムは進化し、エントロピーが増加し、構造は劣化します。
 
-- Um otimizador
-- Um agente
-- Um tomador de decisões
-- Um controlador
-- Um recomendador
-- Uma inteligência
-- Adaptável ou com capacidade de aprendizado
-- Autocurativo
+多くのツールは、これに対応するために、インテリジェンス（最適化器、エージェント、自己修復機能など）を追加します。Registrumは、その逆のアプローチを取ります。**制約を追加します。**
 
-Ele nunca responde *o que importa*.
-Ele apenas preserva as condições sob as quais essa pergunta permanece respondível.
+- **ライブラリ開発者向け**：状態管理に構造的な保証を組み込み、ユーザーが手間なく可読性を実現できるようにします。
+- **監査が重要なシステム向け**：すべての状態遷移は、決定論的であり、再現可能であり、独立して検証可能です。
+- **複雑さを避けたいチーム向け**：Registrumは、無効な遷移を、構造化された結果とともに拒否し、静かに問題を隠蔽することはありません。
+
+その結果、システム全体で、ID、履歴、および順序が、変更の回数に関わらず、常に確認できる状態が維持されます。
 
 ---
 
 ## Princípio Fundamental
 
-> **A entropia é permitida. A ilegibilidade não.**
+> **エントロピーは許容されます。しかし、不可解さは許されません。**
 
-O Registrum não reduz a entropia globalmente.
-Ele restringe onde a entropia pode existir, para que a identidade, a linhagem e a estrutura permaneçam inspecionáveis ao longo do tempo.
+Registrumは、全体としてエントロピーを減少させるものではありません。
+Registrumは、エントロピーが存在できる場所を制限し、ID、履歴、および構造が時間とともに確認できる状態を維持します。
+
+---
+
+## O que o Registrum Não É
+
+Registrumは、明示的に以下の機能ではありません。
+
+- 最適化器、エージェント、または意思決定機能
+- コントローラー、レコメンダー、またはインテリジェンス
+- 適応性、学習機能、または自己修復機能
+
+Registrumは、*何が重要か*という問いに決して答えることはありません。
+Registrumは、その問いが依然として答えられる状態を維持するだけです。
+
+---
+
+## アーキテクチャ概要
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  StructuralRegistrar                     │
+│                                                         │
+│  ┌───────────────┐         ┌──────────────────────┐     │
+│  │  Registry      │  parity │  Legacy              │     │
+│  │  (RPEG v1 DSL) │◄──────►│  (TS predicates)     │     │
+│  │  [primary]     │         │  [secondary witness] │     │
+│  └───────┬───────┘         └──────────┬───────────┘     │
+│          │         agree?             │                  │
+│          └────────────┬───────────────┘                  │
+│                       ▼                                  │
+│              11 Structural Invariants                    │
+│         ┌──────────┬──────────┬──────────┐              │
+│         │ Identity │ Lineage  │ Ordering │              │
+│         │  (3)     │  (4)     │  (4)     │              │
+│         └──────────┴──────────┴──────────┘              │
+│                       │                                  │
+│          ┌────────────┴────────────┐                     │
+│          ▼                         ▼                     │
+│     ✅ Accepted                ❌ Refused                │
+│     (stateId, orderIndex)      (violations[])            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Persistence: Snapshot · Replay · Rehydrate      │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Attestation (optional): XRPL witness ledger     │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -65,145 +108,85 @@ Ele restringe onde a entropia pode existir, para que a identidade, a linhagem e 
 
 ### Registro Estrutural
 
-O registro é a única autoridade constitucional:
+レジスタは、唯一の権限を持つコンポーネントです。
 
-- Valida todas as transições de estado contra 11 invariantes estruturais
-- Impõe restrições de identidade, linhagem e ordenação
-- Garante determinismo e rastreabilidade
-- Apresenta violações sem resolvê-las (falha segura)
+- すべての状態遷移を、**11の構造的な不変条件**に対して検証します。
+- ID、履歴、および順序に関する制約を適用します。
+- 決定論性と追跡可能性を保証します。
+- 問題を解決せずに、違反を検出し、報告します（フェイルセーフ）。
 
-Tudo é registrado através dele. Nada o ignora.
+すべてがこのレジスタを経由します。何もこのレジスタを迂回することはできません。
 
 ### Os 11 Invariantes
 
 | Classe | Contagem | Propósito |
-| ------- | ------- | --------- |
-| Identidade | 3 | Único, imutável, endereçado por conteúdo |
-| Linhagem | 4 | Parentesco válido, acíclico, rastreável |
-| Ordenação | 4 | Monotônica, sem lacunas, determinística |
+|-------|-------|---------|
+| **Identity** | 3 | Único, imutável, endereçado por conteúdo |
+| **Lineage** | 4 | Parentesco válido, acíclico, rastreável |
+| **Ordering** | 4 | Monotônica, sem lacunas, determinística |
 
-Esses invariantes são constitucionais. Alterá-los requer governança formal.
+これらの不変条件は、憲法のようなものです。これらを変更するには、正式な承認が必要です。
 
 ---
 
 ## Duas Validações Constitucionais Independentes
 
-O Registrum mantém **dois mecanismos de invariância independentes**:
+Registrumは、**2つの独立した不変条件エンジン**を維持しています。
 
 | Validação | Papel | Implementação |
-| --------- | ------ | ---------------- |
-| Registro | Autoridade primária | DSL compilado (RPEG v1) |
-| Legado | Validação secundária | Predicados TypeScript |
+|---------|------|----------------|
+| **Registry** | Autoridade primária | DSL compilado (RPEG v1) |
+| **Legacy** | Validação secundária | Predicados TypeScript |
 
-A partir da Fase H, **o registro é o mecanismo constitucional padrão**.
-O legado permanece como uma validação secundária independente.
+Phase H以降、**レジスタはデフォルトの不変条件エンジン**となっています。
+従来のシステムは、独立した二次的な検証機能として残っています。
 
 ### Por que Duas Validações?
 
-- **O acordo é necessário** — Ambos devem concordar para que uma transição seja válida
-- **O desacordo interrompe** — A divergência de paridade interrompe o sistema (falha segura)
-- **A independência é intencional** — Nenhum pode substituir o outro
+- **合意が必要です**：遷移が有効であるためには、両方のエンジンが合意する必要があります。
+- **意見の不一致は停止を引き起こします**：不一致が発生すると、システムは停止します（フェイルセーフ）。
+- **独立性は意図的な設計です**：どちらのエンジンも、もう一方を上書きすることはできません。
 
-Este é um recurso de segurança e legibilidade, não uma dívida técnica.
-
-O modo dual é indefinido. Não há planos para remover nenhuma das validações.
+これは、技術的な負債ではなく、安全と可読性を確保するための機能です。
+二重検証モードは、恒久的なものです。どちらの検証機能も削除する予定はありません。
 
 ### Evidência de Paridade
 
-274 testes comprovam a equivalência comportamental:
-- 58 testes de paridade em todas as classes invariantes
-- 12 testes de paridade de persistência (estabilidade temporal)
-- Paridade de repetição: execução em tempo real ≡ execução repetida
+274個のテストが、動作の同等性を証明しています。
+- すべての不変条件クラスにわたる58個の整合性テスト
+- 12個の永続性整合性テスト（時間的な安定性）
+- 再生整合性：実行中の状態 ≡ 再生された状態
 
 ---
 
 ## Histórico, Repetição e Auditabilidade
 
-### Snapshots (Instantâneos)
-
-O Registrum pode criar snapshots do seu estado completo:
-- Esquema versionado (`RegistrarSnapshotV1`)
-- Hashes endereçados por conteúdo
-- Serialização determinística
-
-### Repetição
-
-Decisões históricas podem ser repetidas:
-- Execução somente leitura contra um registrador novo
-- Comprova o determinismo temporal
-- As mesmas transições → os mesmos resultados
-
-### Auditabilidade
-
-Cada julgamento estrutural é:
-- Reprodutível após o fato
-- Independente do contexto de execução
-- Verificável por qualquer parte com o snapshot
+| 機能 | 説明 |
+|------------|-------------|
+| **Snapshot** | バージョン管理されたスキーマ (`RegistrarSnapshotV1`)、コンテンツベースのハッシュ、決定論的なシリアライゼーション |
+| **Replay** | 新しいレジスタに対して、読み取り専用で再実行を行うことで、時間的な決定論を証明します。 |
+| **Audit** | すべての構造的な判断は、再現可能であり、コンテキストに依存せず、スナップショットを持つすべての関係者が検証可能です。 |
 
 ---
 
 ## Atestado Externo (Opcional)
 
-O Registrum pode, opcionalmente, emitir atestados criptográficos para um livro-razão externo imutável (como o XRPL) para fins de verificação pública.
+Registrumは、オプションで、暗号化された認証情報を、外部の不変の台帳（XRPLなど）に送信し、公開検証を行うことができます。
 
 | Propriedade | Valor |
-| ---------- | ------- |
+|----------|-------|
 | Padrão | Desativado |
 | Autoridade | Não autorizado (apenas observador) |
 | Efeito no comportamento | Nenhum |
 
-Os atestados registram *o que* o Registrum decidiu.
-O Registrum decide *o que* é válido.
+認証情報は、Registrumが*どのような判断をしたか*を記録します。
+Registrumは、*何が有効であるか*を判断します。
 
-**A autoridade flui para dentro. A observação flui para fora.**
+**権限は内側から流れ、検証は外側へ流れます。**
 
-Veja:
-- [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — Justificativa
-- [`docs/ATTESTATION_SPEC.md`](docs/ATTESTATION_SPEC.md) — Especificação
-
----
-
-## Governança
-
-O Registrum é governado por um **modelo constitucional**.
-
-| Princípio | Significado |
-| ----------- | --------- |
-| Garantias comportamentais > velocidade de implementação de recursos | A correção tem precedência |
-| Apenas mudanças baseadas em evidências | Nenhuma mudança sem prova |
-| Processo formal obrigatório | Propostas, artefatos, decisões |
-
-### Status Atual
-
-- **Fase H**: Concluída (registro padrão, atestado habilitado)
-- **Governança**: Ativa e aplicada
-- **Todas as mudanças**: Requerem um processo de governança formal
-
-Todas as futuras mudanças são decisões de governança, não tarefas de engenharia.
-
-Veja:
-- [`docs/governance/PHILOSOPHY.md`](docs/governance/PHILOSOPHY.md) — Por que a governança existe
-- [`docs/governance/SCOPE.md`](docs/governance/SCOPE.md) — O que é governado
-- [`docs/GOVERNANCE_HANDOFF.md`](docs/GOVERNANCE_HANDOFF.md) — Transição para a governança
-
----
-
-## Status do Projeto
-
-**O Registrum atingiu um estado final estável.**
-
-| Fase | Status | Evidência |
-| ------- | -------- | ---------- |
-| A–C | Concluído | Registrador principal, estrutura de testes de paridade |
-| E | Concluído | Persistência, repetição, estabilidade temporal |
-| G | Concluído | Estrutura de governança |
-| H | Concluído | Registro padrão, atestado habilitado |
-
-**Cobertura de testes**: 279 testes aprovados em 14 conjuntos de testes
-
-O desenvolvimento foi transferido para a gestão. Futuras mudanças requerem governança.
-
-Veja: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
+詳細については、以下のドキュメントを参照してください。
+- [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — 理由
+- [`docs/ATTESTATION_SPEC.md`](docs/ATTESTATION_SPEC.md) — 仕様
 
 ---
 
@@ -215,79 +198,205 @@ Veja: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 npm install @mcp-tool-shop/registrum
 ```
 
-### Uso Básico
+### クイックスタート
 
 ```typescript
 import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
-import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
 
-// Option 1: Legacy mode (TypeScript predicates, no compiled registry needed)
 const registrar = new StructuralRegistrar({ mode: "legacy" });
-
-// Option 2: Registry mode (default — requires compiled registry)
-// const compiledRegistry = loadCompiledRegistry();
-// const registrar = new StructuralRegistrar({ compiledRegistry });
 
 // Register a root state
 const result = registrar.register({
   from: null,
-  to: { id: "state-1", structure: { version: 1 }, data: {} }
+  to: { id: "state-1", structure: { version: 1 }, data: {} },
 });
 
 if (result.kind === "accepted") {
   console.log(`Registered at index ${result.orderIndex}`);
 } else {
-  console.log(`Rejected: ${result.violations.map(v => v.invariantId)}`);
+  // Structured refusal — the violations name which invariants failed
+  console.log(`Refused: ${result.violations.map((v) => v.invariantId)}`);
 }
+```
+
+### モード
+
+| モード | エンジン | 使用場面 |
+|------|--------|-------------|
+| `"legacy"` | Predicados TypeScript | 迅速なプロトタイピング、外部依存関係なし |
+| `"registry"` (デフォルト) | コンパイルされたRPEG v1 DSL | 完全なデュアルウィットネスによる本番環境での利用 |
+
+```typescript
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
+
+// Registry mode (default) — compiled DSL + legacy as dual witnesses
+const compiledRegistry = loadCompiledRegistry();
+const registrar = new StructuralRegistrar({ compiledRegistry });
 ```
 
 ### Executando Exemplos
 
-Os exemplos no diretório `examples/` são **demonstrações ilustrativas**, e não uma API estável.
-
-Eles requerem [`tsx`](https://github.com/esbuild-kit/tsx) para serem executados:
+[`examples/`](examples/) ディレクトリには、説明的なデモンストレーションが含まれています（安定版APIではありません）。
+これらは [`tsx`](https://github.com/esbuild-kit/tsx) を必要とします。
 
 ```bash
-# Run the refusal-as-success example
-npm run example:refusal
-
-# Or directly with npx
-npx tsx examples/refusal-as-success.ts
+npm run example:refusal        # Refusal-as-success demo
+npx tsx examples/refusal-as-success.ts   # Or run directly
 ```
 
-**Observação:** Os exemplos utilizam `npx tsx` (ou `npx ts-node` com suporte a ESM). Estes não são dependências para produção, mas sim ferramentas de desenvolvimento/demonstração.
+---
+
+## APIクイックリファレンス
+
+### コアの機能
+
+```typescript
+// Implementation
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+
+// Types
+import type {
+  State,          // { id, structure, data }
+  Transition,     // { from, to, metadata? }
+  RegistrationResult,   // { kind: "accepted" | "refused", ... }
+  Invariant,      // { id, scope, check }
+  InvariantViolation,   // { invariantId, classification, message }
+} from "@mcp-tool-shop/registrum";
+
+// Invariants
+import {
+  INITIAL_INVARIANTS,     // All 11 invariants
+  getInvariantsByScope,   // Filter by "identity" | "lineage" | "ordering"
+  getInvariantById,       // Lookup by invariant ID
+} from "@mcp-tool-shop/registrum";
+
+// Version
+import { REGISTRUM_VERSION } from "@mcp-tool-shop/registrum";
+```
+
+### `StructuralRegistrar`
+
+| メソッド | 戻り値 | 説明 |
+|--------|---------|-------------|
+| `register(transition)` | `RegistrationResult` | 状態遷移を検証し、記録します。 |
+| `getState(id)` | `State \` | undefined` | 登録された状態をIDで取得します。 |
+| `getHistory()` | `Transition[]` | 受け入れられた遷移の完全な順序付き履歴。 |
+| `snapshot()` | `RegistrarSnapshotV1` | 決定論的で、コンテンツベースのスナップショット。 |
+
+---
+
+## Governança
+
+Registrum は、**憲法モデル**に基づいて運用されます。
+
+| Princípio | Significado |
+|-----------|---------|
+| Garantias comportamentais > velocidade de implementação de recursos | A correção tem precedência |
+| Apenas mudanças baseadas em evidências | Nenhuma mudança sem prova |
+| Processo formal obrigatório | Propostas, artefatos, decisões |
+
+### Status Atual
+
+- **フェーズH**: 完了 (registryのデフォルト、アテステーション有効)
+- **ガバナンス**: 活発で、実施されています。
+- **すべての変更**: 正式なガバナンスプロセスが必要です。
+
+今後のすべての変更は、エンジニアリングタスクではなく、ガバナンスの決定事項です。
+
+参照先:
+- [`docs/governance/PHILOSOPHY.md`](docs/governance/PHILOSOPHY.md) — ガバナンスの存在理由
+- [`docs/governance/SCOPE.md`](docs/governance/SCOPE.md) — ガバナンスの対象範囲
+- [`docs/GOVERNANCE_HANDOFF.md`](docs/GOVERNANCE_HANDOFF.md) — ガバナンスへの移行
+
+---
+
+## Status do Projeto
+
+**Registrum は、安定した最終状態に到達しました。**
+
+| Fase | Status | Evidência |
+|-------|--------|----------|
+| A–C | Concluído | Registrador principal, estrutura de testes de paridade |
+| E | Concluído | Persistência, repetição, estabilidade temporal |
+| G | Concluído | Estrutura de governança |
+| H | Concluído | Registro padrão, atestado habilitado |
+
+**テストカバレッジ**: 14のテストスイートで構成される279件のテストが合格しています。
+
+開発は、管理体制への移行が完了しました。今後の変更には、ガバナンスが必要です。
+
+参照先: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 
 ---
 
 ## Documentação
 
 | Documento | Propósito |
-| ---------- | --------- |
+|----------|---------|
 | [`WHAT_REGISTRUM_IS.md`](docs/WHAT_REGISTRUM_IS.md) | Definição de identidade |
 | [`PROVABLE_GUARANTEES.md`](docs/PROVABLE_GUARANTEES.md) | Declarações formais com evidências |
+| [`INVARIANTS.md`](docs/INVARIANTS.md) | 完全な不変の参照 |
 | [`FAILURE_BOUNDARIES.md`](docs/FAILURE_BOUNDARIES.md) | Condições de falha crítica |
 | [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | Garantias temporais |
-| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | Compreendendo a arquitetura de dupla testemunha |
-| [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | Política de dupla testemunha |
+| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | デュアルウィットネスアーキテクチャのチュートリアル |
 | [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | Formato de snapshot (constitucional) |
+| [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | Política de dupla testemunha |
 
 ---
 
 ## Princípios de Design
 
-- Restrição em vez de poder
-- Legibilidade em vez de desempenho
-- Restrições em vez de heurísticas
-- Inspeção em vez de intervenção
-- Parada em vez de extensão infinita
+- **権力に対する抑制**
+- **パフォーマンスよりも可読性**
+- **ヒューリスティクスよりも制約**
+- **介入よりも検査**
+- **無限の拡張よりも停止**
 
-O Registrum é bem-sucedido quando se torna algo comum, confiável e previsível.
+Registrum が成功するのは、退屈で、信頼でき、予測可能になる時です。
 
 ---
 
-## Resumo em uma frase
+## セキュリティとデータ範囲
 
-O Registrum é um registrador estrutural que preserva a interpretabilidade à medida que os sistemas evoluem, garantindo que a mudança permaneça legível mesmo diante da entropia.
+| 側面 | 詳細 |
+|--------|--------|
+| **Data touched** | メモリ内での状態遷移、オプションでローカルファイルシステムへのJSONスナップショット |
+| **Data NOT touched** | ネットワークリクエストなし、外部APIなし、データベースなし、ユーザー認証情報なし |
+| **Permissions** | ユーザーが指定したスナップショットパスへのみ読み書き可能 (永続化を使用する場合) |
+| **Network** | なし — 完全オフラインのライブラリ (XRPLアテステーションはデフォルトで無効) |
+| **Telemetry** | 収集または送信されるデータはありません。 |
+
+脆弱性報告については、[SECURITY.md](SECURITY.md) を参照してください。
+
+---
+
+## 貢献
+
+Registrum は、ガバナンスを優先する貢献モデルを採用しています。すべての変更には、証拠に基づいた正式な提案が必要です。
+
+詳細な貢献に関する哲学とプロセスについては、[CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+
+---
+
+## スコアカード
+
+| カテゴリ | スコア |
+|----------|-------|
+| A. セキュリティ | 10 |
+| B. エラー処理 | 10 |
+| C. 運用者向けドキュメント | 10 |
+| D. 導入時の衛生 | 10 |
+| E. 識別 (ソフト) | 10 |
+| **Overall** | **50/50** |
+
+> 詳細な監査: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
+
+---
+
+## ライセンス
+
+MIT
 
 ---
 

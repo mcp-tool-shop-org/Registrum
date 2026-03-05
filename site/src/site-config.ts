@@ -14,7 +14,7 @@ export const config: SiteConfig = {
     headlineAccent: 'legible.',
     description: 'A governed, dual-witness registrar. 11 structural invariants, fail-closed validation, replayable history, and optional XRPL attestation. 279 tests.',
     primaryCta: { href: '#invariants', label: 'See the invariants' },
-    secondaryCta: { href: 'https://www.npmjs.com/package/@mcp-tool-shop/registrum', label: 'npm' },
+    secondaryCta: { href: 'handbook/', label: 'Read the Handbook' },
     previews: [
       { label: 'Register', code: "const result = registrar.register({\n  from: null,\n  to: { id: 'state-1', structure: { version: 1 } }\n});" },
       { label: 'Validate', code: "if (result.kind === 'accepted') {\n  console.log(`Index: ${result.orderIndex}`);\n} else {\n  console.log(result.violations);\n}" },

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a>
+  <a href="README.ja.md">日本語</a> | <a href="README.zh.md">中文</a> | <a href="README.es.md">Español</a> | <a href="README.fr.md">Français</a> | <a href="README.hi.md">हिन्दी</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 <p align="center">
@@ -12,43 +12,37 @@
   <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
 </p>
 
-A governed, dual-witness, deterministic registrar with replayable history and optional external attestation.
+<p align="center"><strong>A governed, dual-witness, deterministic registrar with replayable history and optional external attestation.</strong></p>
 
 ---
 
 ## What Registrum Is
 
-Registrum is a **structural registrar** for maintaining legibility in evolving systems.
-
-It records, validates, and orders state transitions under explicit constraints so that structure remains interpretable as entropy accumulates.
+Registrum is a **structural registrar** — a library that records, validates, and orders state transitions under explicit constraints so that structure remains interpretable as entropy accumulates.
 
 | Property | Meaning |
 |----------|---------|
-| Structural | Operates on form, not meaning |
-| Deterministic | Same inputs → same outputs, always |
-| Fail-closed | Invalid input causes hard failure, not partial recovery |
-| Replayable | Historical decisions can be re-executed with identical results |
-| Non-agentic | Never acts, decides, or optimizes |
+| **Structural** | Operates on form, not meaning |
+| **Deterministic** | Same inputs → same outputs, always |
+| **Fail-closed** | Invalid input causes hard failure, not partial recovery |
+| **Replayable** | Historical decisions can be re-executed with identical results |
+| **Non-agentic** | Never acts, decides, or optimizes |
 
 **Registrum ensures that change remains legible.**
 
 ---
 
-## What Registrum Is Not
+## Why Registrum?
 
-Registrum is explicitly **not**:
+Systems evolve. Entropy accumulates. Structure decays.
 
-- An optimizer
-- An agent
-- A decision-maker
-- A controller
-- A recommender
-- An intelligence
-- Adaptive or learning
-- Self-healing
+Most tools respond to this by adding intelligence — optimizers, agents, self-healing layers. Registrum takes the opposite approach: **it adds constraints**.
 
-It never answers *what matters*.
-It only preserves the conditions under which that question remains answerable.
+- **For library authors** — Embed structural guarantees into state management so consumers inherit legibility for free.
+- **For audit-critical systems** — Every state transition is deterministic, replayable, and independently verifiable.
+- **For teams resisting complexity** — Registrum refuses invalid transitions with structured verdicts instead of silently degrading.
+
+The result: a system where identity, lineage, and ordering remain inspectable no matter how many changes have occurred.
 
 ---
 
@@ -61,13 +55,62 @@ It constrains where entropy may exist so that identity, lineage, and structure r
 
 ---
 
+## What Registrum Is Not
+
+Registrum is explicitly **not**:
+
+- An optimizer, agent, or decision-maker
+- A controller, recommender, or intelligence
+- Adaptive, learning, or self-healing
+
+It never answers *what matters*.
+It only preserves the conditions under which that question remains answerable.
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  StructuralRegistrar                     │
+│                                                         │
+│  ┌───────────────┐         ┌──────────────────────┐     │
+│  │  Registry      │  parity │  Legacy              │     │
+│  │  (RPEG v1 DSL) │◄──────►│  (TS predicates)     │     │
+│  │  [primary]     │         │  [secondary witness] │     │
+│  └───────┬───────┘         └──────────┬───────────┘     │
+│          │         agree?             │                  │
+│          └────────────┬───────────────┘                  │
+│                       ▼                                  │
+│              11 Structural Invariants                    │
+│         ┌──────────┬──────────┬──────────┐              │
+│         │ Identity │ Lineage  │ Ordering │              │
+│         │  (3)     │  (4)     │  (4)     │              │
+│         └──────────┴──────────┴──────────┘              │
+│                       │                                  │
+│          ┌────────────┴────────────┐                     │
+│          ▼                         ▼                     │
+│     ✅ Accepted                ❌ Refused                │
+│     (stateId, orderIndex)      (violations[])            │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Persistence: Snapshot · Replay · Rehydrate      │    │
+│  └─────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │  Attestation (optional): XRPL witness ledger     │    │
+│  └─────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## How Registrum Works
 
 ### Structural Registrar
 
 The registrar is the sole constitutional authority:
 
-- Validates all state transitions against 11 structural invariants
+- Validates all state transitions against **11 structural invariants**
 - Enforces identity, lineage, and ordering constraints
 - Guarantees determinism and traceability
 - Surfaces violations without resolving them (fail-closed)
@@ -78,9 +121,9 @@ Everything registers through it. Nothing bypasses it.
 
 | Class | Count | Purpose |
 |-------|-------|---------|
-| Identity | 3 | Unique, immutable, content-addressed |
-| Lineage | 4 | Valid parentage, acyclic, traceable |
-| Ordering | 4 | Monotonic, gap-free, deterministic |
+| **Identity** | 3 | Unique, immutable, content-addressed |
+| **Lineage** | 4 | Valid parentage, acyclic, traceable |
+| **Ordering** | 4 | Monotonic, gap-free, deterministic |
 
 These invariants are constitutional. Changing them requires formal governance.
 
@@ -92,8 +135,8 @@ Registrum maintains **two independent invariant engines**:
 
 | Witness | Role | Implementation |
 |---------|------|----------------|
-| Registry | Primary authority | Compiled DSL (RPEG v1) |
-| Legacy | Secondary witness | TypeScript predicates |
+| **Registry** | Primary authority | Compiled DSL (RPEG v1) |
+| **Legacy** | Secondary witness | TypeScript predicates |
 
 As of Phase H, **registry is the default constitutional engine**.
 Legacy remains as an independent secondary witness.
@@ -105,7 +148,6 @@ Legacy remains as an independent secondary witness.
 - **Independence is intentional** — Neither can override the other
 
 This is a safety and legibility feature, not technical debt.
-
 Dual-mode is indefinite. There is no plan to remove either witness.
 
 ### Parity Evidence
@@ -119,26 +161,11 @@ Dual-mode is indefinite. There is no plan to remove either witness.
 
 ## History, Replay, and Auditability
 
-### Snapshots
-
-Registrum can snapshot its complete state:
-- Versioned schema (`RegistrarSnapshotV1`)
-- Content-addressed hashes
-- Deterministic serialization
-
-### Replay
-
-Historical decisions can be replayed:
-- Read-only execution against fresh registrar
-- Proves temporal determinism
-- Same transitions → same outcomes
-
-### Auditability
-
-Every structural judgment is:
-- Reproducible after the fact
-- Independent of execution context
-- Verifiable by any party with the snapshot
+| Capability | Description |
+|------------|-------------|
+| **Snapshot** | Versioned schema (`RegistrarSnapshotV1`), content-addressed hashes, deterministic serialization |
+| **Replay** | Read-only re-execution against a fresh registrar — proves temporal determinism |
+| **Audit** | Every structural judgment is reproducible, context-independent, and verifiable by any party with the snapshot |
 
 ---
 
@@ -160,6 +187,102 @@ Registrum decides *what* is valid.
 See:
 - [`docs/WHY_XRPL.md`](docs/WHY_XRPL.md) — Rationale
 - [`docs/ATTESTATION_SPEC.md`](docs/ATTESTATION_SPEC.md) — Specification
+
+---
+
+## Getting Started
+
+### Installation
+
+```bash
+npm install @mcp-tool-shop/registrum
+```
+
+### Quick Start
+
+```typescript
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+
+const registrar = new StructuralRegistrar({ mode: "legacy" });
+
+// Register a root state
+const result = registrar.register({
+  from: null,
+  to: { id: "state-1", structure: { version: 1 }, data: {} },
+});
+
+if (result.kind === "accepted") {
+  console.log(`Registered at index ${result.orderIndex}`);
+} else {
+  // Structured refusal — the violations name which invariants failed
+  console.log(`Refused: ${result.violations.map((v) => v.invariantId)}`);
+}
+```
+
+### Modes
+
+| Mode | Engine | When to Use |
+|------|--------|-------------|
+| `"legacy"` | TypeScript predicates | Quick prototyping, no external deps |
+| `"registry"` (default) | Compiled RPEG v1 DSL | Production use with full dual-witness |
+
+```typescript
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
+
+// Registry mode (default) — compiled DSL + legacy as dual witnesses
+const compiledRegistry = loadCompiledRegistry();
+const registrar = new StructuralRegistrar({ compiledRegistry });
+```
+
+### Running Examples
+
+The [`examples/`](examples/) directory contains illustrative demonstrations (not stable API).
+They require [`tsx`](https://github.com/esbuild-kit/tsx):
+
+```bash
+npm run example:refusal        # Refusal-as-success demo
+npx tsx examples/refusal-as-success.ts   # Or run directly
+```
+
+---
+
+## API Quick Reference
+
+### Core Exports
+
+```typescript
+// Implementation
+import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+
+// Types
+import type {
+  State,          // { id, structure, data }
+  Transition,     // { from, to, metadata? }
+  RegistrationResult,   // { kind: "accepted" | "refused", ... }
+  Invariant,      // { id, scope, check }
+  InvariantViolation,   // { invariantId, classification, message }
+} from "@mcp-tool-shop/registrum";
+
+// Invariants
+import {
+  INITIAL_INVARIANTS,     // All 11 invariants
+  getInvariantsByScope,   // Filter by "identity" | "lineage" | "ordering"
+  getInvariantById,       // Lookup by invariant ID
+} from "@mcp-tool-shop/registrum";
+
+// Version
+import { REGISTRUM_VERSION } from "@mcp-tool-shop/registrum";
+```
+
+### `StructuralRegistrar`
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `register(transition)` | `RegistrationResult` | Validate and record a state transition |
+| `getState(id)` | `State \| undefined` | Retrieve a registered state by ID |
+| `getHistory()` | `Transition[]` | Full ordered history of accepted transitions |
+| `snapshot()` | `RegistrarSnapshotV1` | Deterministic, content-addressed snapshot |
 
 ---
 
@@ -207,87 +330,32 @@ See: [`docs/STEWARD_CLOSING_NOTE.md`](docs/STEWARD_CLOSING_NOTE.md)
 
 ---
 
-## Getting Started
-
-### Installation
-
-```bash
-npm install @mcp-tool-shop/registrum
-```
-
-### Basic Usage
-
-```typescript
-import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
-import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
-
-// Option 1: Legacy mode (TypeScript predicates, no compiled registry needed)
-const registrar = new StructuralRegistrar({ mode: "legacy" });
-
-// Option 2: Registry mode (default — requires compiled registry)
-// const compiledRegistry = loadCompiledRegistry();
-// const registrar = new StructuralRegistrar({ compiledRegistry });
-
-// Register a root state
-const result = registrar.register({
-  from: null,
-  to: { id: "state-1", structure: { version: 1 }, data: {} }
-});
-
-if (result.kind === "accepted") {
-  console.log(`Registered at index ${result.orderIndex}`);
-} else {
-  console.log(`Rejected: ${result.violations.map(v => v.invariantId)}`);
-}
-```
-
-### Running Examples
-
-Examples in the `examples/` directory are **illustrative demonstrations**, not stable API.
-
-They require [`tsx`](https://github.com/esbuild-kit/tsx) to run:
-
-```bash
-# Run the refusal-as-success example
-npm run example:refusal
-
-# Or directly with npx
-npx tsx examples/refusal-as-success.ts
-```
-
-**Note**: Examples rely on `npx tsx` (or `npx ts-node` with ESM support). These are not production dependencies — they are development/demonstration tools.
-
----
-
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
 | [`WHAT_REGISTRUM_IS.md`](docs/WHAT_REGISTRUM_IS.md) | Identity definition |
 | [`PROVABLE_GUARANTEES.md`](docs/PROVABLE_GUARANTEES.md) | Formal claims with evidence |
+| [`INVARIANTS.md`](docs/INVARIANTS.md) | Full invariant reference |
 | [`FAILURE_BOUNDARIES.md`](docs/FAILURE_BOUNDARIES.md) | Hard failure conditions |
 | [`HISTORY_AND_REPLAY.md`](docs/HISTORY_AND_REPLAY.md) | Temporal guarantees |
-| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | Understanding dual-witness architecture |
-| [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | Dual-witness policy |
+| [`TUTORIAL_DUAL_WITNESS.md`](docs/TUTORIAL_DUAL_WITNESS.md) | Dual-witness architecture tutorial |
 | [`CANONICAL_SERIALIZATION.md`](docs/CANONICAL_SERIALIZATION.md) | Snapshot format (constitutional) |
+| [`governance/DUAL_WITNESS_POLICY.md`](docs/governance/DUAL_WITNESS_POLICY.md) | Dual-witness policy |
 
 ---
 
 ## Design Ethos
 
-- Restraint over power
-- Legibility over performance
-- Constraints over heuristics
-- Inspection over intervention
-- Stopping over endless extension
+- **Restraint** over power
+- **Legibility** over performance
+- **Constraints** over heuristics
+- **Inspection** over intervention
+- **Stopping** over endless extension
 
 Registrum is successful when it becomes boring, dependable, and unsurprising.
 
 ---
-
-## One-Sentence Summary
-
-Registrum is a structural registrar that preserves interpretability as systems evolve, ensuring that change remains legible under entropy.
 
 ## Security & Data Scope
 
@@ -301,6 +369,16 @@ Registrum is a structural registrar that preserves interpretability as systems e
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
+---
+
+## Contributing
+
+Registrum follows a governance-first contribution model. All changes require formal proposals with evidence.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution philosophy and process.
+
+---
+
 ## Scorecard
 
 | Category | Score |
@@ -313,6 +391,8 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 | **Overall** | **50/50** |
 
 > Full audit: [SHIP_GATE.md](SHIP_GATE.md) · [SCORECARD.md](SCORECARD.md)
+
+---
 
 ## License
 
