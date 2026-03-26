@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - 2026-03-25
+
+### Added
+- Version alignment tests (3 new tests)
+- CHANGELOG.md included in npm tarball
+
+### Fixed
+- SECURITY.md supported version widened from "1.0.x" to "1.x"
+- SHA-pinned CI actions (checkout, setup-node)
+
 ## [1.1.0] - 2026-03-05
 
 ### Added
