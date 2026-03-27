@@ -204,7 +204,7 @@ const stateOnly = registrar.listInvariants("state");
 
 **Q: Do I need to use registry mode in production?**
 
-Legacy mode enforces the same 11 invariants as registry mode and is perfectly suitable for production use. Registry mode adds a second independent engine (compiled DSL) that must agree with the legacy engine on every verdict. This provides stronger confidence but requires loading the registry JSON file. Start with legacy mode and switch to registry mode when you want dual-witness guarantees.
+Legacy mode enforces the same 11 invariants as registry mode and is perfectly suitable for production use. Registry mode uses a compiled RPEG v1 DSL as the primary evaluator. Behavioral equivalence between the two engines is proven by 85 parity tests in the test suite, so you can trust either mode in production. Start with legacy mode for simplicity and switch to registry mode when you want the compiled DSL engine.
 
 **Q: What is the `data` field for?**
 

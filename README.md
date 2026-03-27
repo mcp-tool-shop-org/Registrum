@@ -152,7 +152,7 @@ Dual-mode is indefinite. There is no plan to remove either witness.
 
 ### Parity Evidence
 
-91 parity tests prove behavioral equivalence:
+85 parity tests prove behavioral equivalence:
 - Invariant parity tests across all classes (identity, lineage, ordering, metadata)
 - Persistence parity tests (temporal stability)
 - Registry-mode parity tests (compiled DSL vs TypeScript predicates)
@@ -206,10 +206,10 @@ import { StructuralRegistrar } from "@mcptoolshop/registrum";
 
 const registrar = new StructuralRegistrar({ mode: "legacy" });
 
-// Register a root state
+// Register a root state (isRoot: true is required for root states)
 const result = registrar.register({
   from: null,
-  to: { id: "state-1", structure: { version: 1 }, data: {} },
+  to: { id: "state-1", structure: { isRoot: true, version: 1 }, data: {} },
 });
 
 if (result.kind === "accepted") {
@@ -228,11 +228,15 @@ if (result.kind === "accepted") {
 | `"registry"` (default) | Compiled RPEG v1 DSL | Production use with full dual-witness |
 
 ```typescript
+import { readFileSync } from "node:fs";
 import { StructuralRegistrar } from "@mcptoolshop/registrum";
 import { loadInvariantRegistry } from "@mcptoolshop/registrum/registry";
 
 // Registry mode (default) — compiled DSL + legacy as dual witnesses
-const compiledRegistry = loadInvariantRegistry();
+const raw = JSON.parse(
+  readFileSync("node_modules/@mcptoolshop/registrum/invariants/registry.json", "utf-8")
+);
+const compiledRegistry = loadInvariantRegistry(raw);
 const registrar = new StructuralRegistrar({ compiledRegistry });
 ```
 

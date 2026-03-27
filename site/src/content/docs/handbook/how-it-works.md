@@ -75,17 +75,17 @@ Since Phase H, **Registry is the default constitutional engine.** Legacy remains
 
 ### Why two witnesses?
 
-The dual-witness architecture is a safety and legibility feature:
+The dual-witness architecture is a safety and legibility feature. At runtime, only one engine evaluates each transition (based on the operating mode). The equivalence guarantee comes from the parity test suite:
 
-- **Agreement is required.** Both engines must independently accept a transition for it to be valid. If either refuses, the transition is refused.
-- **Disagreement halts the system.** If the two engines reach different verdicts on the same transition, this is a parity divergence — a serious structural error that stops the system immediately (fail-closed).
-- **Independence is intentional.** The Registry engine (compiled DSL) and Legacy engine (TypeScript predicates) are implemented in fundamentally different ways. If both agree, confidence in the verdict is high. If they disagree, something is genuinely wrong.
+- **Agreement is proven at test time.** The 85 parity tests run identical transitions through both engines and compare verdicts. Any disagreement fails the test suite, blocking release.
+- **Independence is intentional.** The Registry engine (compiled DSL) and Legacy engine (TypeScript predicates) are implemented in fundamentally different ways. Their agreement across the full invariant space proves correctness more robustly than either implementation alone.
+- **Both remain available.** You can choose either mode in production knowing that behavioral equivalence has been formally established by the parity harness.
 
 This is not technical debt or a transitional architecture. Dual-witness mode is indefinite. There is no plan to remove either witness.
 
 ### Parity evidence
 
-The behavioral equivalence between Registry and Legacy is proven by 91 parity tests:
+The behavioral equivalence between Registry and Legacy is proven by 85 parity tests:
 
 - **Invariant parity tests** across all classes (identity, lineage, ordering, metadata) -- the same transition is evaluated by both engines and the verdicts are compared
 - **Persistence parity tests** verifying temporal stability -- snapshots produce identical results regardless of which engine created them
@@ -97,12 +97,15 @@ The behavioral equivalence between Registry and Legacy is proven by 91 parity te
 Here is the complete flow when you register a transition:
 
 1. You call `registrar.register({ from, to })` with the source state (or `null` for a root) and the target state.
-2. The registrar passes the transition to the **Registry engine**, which evaluates all 11 invariants using the compiled RPEG v1 DSL.
-3. The registrar independently passes the same transition to the **Legacy engine**, which evaluates all 11 invariants using TypeScript predicate functions.
-4. The registrar compares the two verdicts:
-   - **Both accept:** The transition is accepted. It receives a monotonic order index and is recorded in the registrar's history.
-   - **Both refuse:** The transition is refused. You receive a structured verdict with all violated invariants listed.
-   - **Disagreement:** Parity divergence. The system halts with a detailed error explaining which invariants diverged.
+2. The registrar delegates to the active engine based on the operating mode:
+   - In **registry mode** (default): The compiled RPEG v1 DSL evaluates all 11 invariants.
+   - In **legacy mode**: TypeScript predicate functions evaluate all 11 invariants.
+3. The engine evaluates every applicable invariant against the transition:
+   - **All pass:** The transition is accepted. It receives a monotonic order index and is recorded in the registrar's history.
+   - **Any fail:** The transition is refused. You receive a structured verdict with all violated invariants listed.
+   - **HALT-level violation:** Critical failure indicating potential corruption.
+
+The dual-witness guarantee is enforced through the **85 parity tests** in the test suite, which run every transition through both engines and verify that they reach identical verdicts. This compile-time parity proof means you can trust either engine in production because they have been proven equivalent across the full invariant space.
 
 ## Persistence layer
 

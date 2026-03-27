@@ -27,9 +27,10 @@ import { StructuralRegistrar } from "@mcptoolshop/registrum";
 const registrar = new StructuralRegistrar({ mode: "legacy" });
 
 // Register a root state (from: null means this is the first state)
+// Root states must include isRoot: true in their structure
 const result = registrar.register({
   from: null,
-  to: { id: "state-1", structure: { version: 1 }, data: {} },
+  to: { id: "state-1", structure: { isRoot: true, version: 1 }, data: {} },
 });
 
 if (result.kind === "accepted") {
@@ -80,7 +81,7 @@ This is a good starting point for learning Registrum and for prototyping. The in
 
 ### Registry mode (default)
 
-Registry mode loads a compiled DSL and runs both the Registry and Legacy engines as independent witnesses. Both must agree for a transition to be accepted:
+Registry mode loads a compiled DSL and uses the RPEG v1 engine as the primary evaluator. Behavioral equivalence with the Legacy engine is proven by 85 parity tests in the test suite:
 
 ```typescript
 import { readFileSync } from "node:fs";
@@ -95,7 +96,7 @@ const compiledRegistry = loadInvariantRegistry(raw);
 const registrar = new StructuralRegistrar({ compiledRegistry });
 ```
 
-`loadInvariantRegistry()` takes a raw JSON object (the parsed contents of `invariants/registry.json`), validates it, compiles the predicate DSL expressions into ASTs, and returns a frozen `CompiledInvariantRegistry`. Registry mode is the default since Phase H and provides the strongest guarantees because two independent implementations must reach the same verdict on every transition.
+`loadInvariantRegistry()` takes a raw JSON object (the parsed contents of `invariants/registry.json`), validates it, compiles the predicate DSL expressions into ASTs, and returns a frozen `CompiledInvariantRegistry`. Registry mode is the default since Phase H and provides the strongest guarantees because the compiled DSL has been proven equivalent to the TypeScript predicates across 85 parity tests.
 
 ## Running the examples
 

@@ -269,9 +269,9 @@ The complete array of all 11 structural invariants. These are the constitutional
 Filter invariants by their scope:
 
 ```typescript
-const stateInvariants = getInvariantsByScope("state");           // 2 invariants
+const stateInvariants = getInvariantsByScope("state");           // 1 invariant
 const transitionInvariants = getInvariantsByScope("transition"); // 3 invariants
-const registrationInvariants = getInvariantsByScope("registration"); // 6 invariants
+const registrationInvariants = getInvariantsByScope("registration"); // 7 invariants
 ```
 
 ### `getInvariantById(id: string): Invariant | undefined`
