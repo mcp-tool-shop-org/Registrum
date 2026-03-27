@@ -12,17 +12,17 @@ This page walks you through installing Registrum, registering your first state t
 Install from npm:
 
 ```bash
-npm install @mcp-tool-shop/registrum
+npm install @mcptoolshop/registrum
 ```
 
-Registrum is a pure TypeScript library with no runtime dependencies beyond Node.js. It makes no network requests, touches no databases, and collects no telemetry.
+Registrum requires Node.js 18 or later. It is a pure TypeScript library with no runtime dependencies. It makes no network requests, touches no databases, and collects no telemetry.
 
 ## Your first registration
 
 Every interaction with Registrum flows through the `StructuralRegistrar`. You create one, then register state transitions through it. The registrar validates each transition against 11 structural invariants and returns a structured verdict.
 
 ```typescript
-import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { StructuralRegistrar } from "@mcptoolshop/registrum";
 
 const registrar = new StructuralRegistrar({ mode: "legacy" });
 
@@ -43,8 +43,8 @@ if (result.kind === "accepted") {
 A few things to notice:
 
 - **`from: null`** indicates a root state — the beginning of a lineage chain.
-- **`result.kind`** is always either `"accepted"` or `"refused"`. There is no ambiguous middle ground.
-- **Refusals are informative.** Each violation names the specific invariant that was breached, so you know exactly what went wrong.
+- **`result.kind`** is always either `"accepted"` or `"rejected"`. There is no ambiguous middle ground.
+- **Rejections are informative.** Each violation names the specific invariant that was breached, so you know exactly what went wrong.
 
 ## Registering subsequent transitions
 
@@ -52,12 +52,12 @@ Once a root state exists, you can register transitions from it to new states:
 
 ```typescript
 const second = registrar.register({
-  from: { id: "state-1", structure: { version: 1 }, data: {} },
-  to: { id: "state-2", structure: { version: 2 }, data: {} },
+  from: "state-1",  // Parent state ID (must be already registered)
+  to: { id: "state-1", structure: { version: 2 }, data: {} },
 });
 ```
 
-The registrar checks that `state-1` exists, that `state-2` has a unique identity, that the lineage is acyclic, and that ordering remains monotonic and gap-free.
+Note that `from` is a **state ID string**, not a State object. The registrar checks that the parent `state-1` exists, validates identity immutability (the `to.id` must match `from` for non-root transitions), verifies the lineage is acyclic, and confirms ordering remains monotonic.
 
 ## Operating modes
 
@@ -83,14 +83,19 @@ This is a good starting point for learning Registrum and for prototyping. The in
 Registry mode loads a compiled DSL and runs both the Registry and Legacy engines as independent witnesses. Both must agree for a transition to be accepted:
 
 ```typescript
-import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
-import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
+import { readFileSync } from "node:fs";
+import { StructuralRegistrar } from "@mcptoolshop/registrum";
+import { loadInvariantRegistry } from "@mcptoolshop/registrum/registry";
 
-const compiledRegistry = loadCompiledRegistry();
+// Load and compile the registry from the invariants JSON file
+const raw = JSON.parse(
+  readFileSync("node_modules/@mcptoolshop/registrum/invariants/registry.json", "utf-8")
+);
+const compiledRegistry = loadInvariantRegistry(raw);
 const registrar = new StructuralRegistrar({ compiledRegistry });
 ```
 
-Registry mode is the default since Phase H. It provides the strongest guarantees because two independent implementations must reach the same verdict on every transition.
+`loadInvariantRegistry()` takes a raw JSON object (the parsed contents of `invariants/registry.json`), validates it, compiles the predicate DSL expressions into ASTs, and returns a frozen `CompiledInvariantRegistry`. Registry mode is the default since Phase H and provides the strongest guarantees because two independent implementations must reach the same verdict on every transition.
 
 ## Running the examples
 

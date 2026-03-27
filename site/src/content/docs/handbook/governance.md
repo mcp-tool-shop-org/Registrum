@@ -53,7 +53,7 @@ Registrum has completed all planned development phases:
 | G | Complete | Governance framework |
 | H | Complete | Registry as default engine, attestation enabled |
 
-**Test coverage:** 279 tests passing across 14 test suites.
+**Test coverage:** 282 tests passing across 15 test suites.
 
 Development has transitioned from active building to **stewardship.** This means:
 

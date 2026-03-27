@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@mcp-tool-shop/registrum"><img src="https://img.shields.io/npm/v/@mcp-tool-shop/registrum" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@mcptoolshop/registrum"><img src="https://img.shields.io/npm/v/@mcptoolshop/registrum" alt="npm version"></a>
   <a href="https://github.com/mcp-tool-shop-org/Registrum/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"></a>
   <a href="https://mcp-tool-shop-org.github.io/Registrum/"><img src="https://img.shields.io/badge/Landing_Page-live-blue" alt="Landing Page"></a>
 </p>
@@ -152,10 +152,11 @@ Dual-mode is indefinite. There is no plan to remove either witness.
 
 ### Parity Evidence
 
-274 tests prove behavioral equivalence:
-- 58 parity tests across all invariant classes
-- 12 persistence parity tests (temporal stability)
-- Replay parity: live execution ≡ replayed execution
+91 parity tests prove behavioral equivalence:
+- Invariant parity tests across all classes (identity, lineage, ordering, metadata)
+- Persistence parity tests (temporal stability)
+- Registry-mode parity tests (compiled DSL vs TypeScript predicates)
+- Replay parity: live execution produces identical results to replayed execution
 
 ---
 
@@ -195,13 +196,13 @@ See:
 ### Installation
 
 ```bash
-npm install @mcp-tool-shop/registrum
+npm install @mcptoolshop/registrum
 ```
 
 ### Quick Start
 
 ```typescript
-import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { StructuralRegistrar } from "@mcptoolshop/registrum";
 
 const registrar = new StructuralRegistrar({ mode: "legacy" });
 
@@ -214,8 +215,8 @@ const result = registrar.register({
 if (result.kind === "accepted") {
   console.log(`Registered at index ${result.orderIndex}`);
 } else {
-  // Structured refusal — the violations name which invariants failed
-  console.log(`Refused: ${result.violations.map((v) => v.invariantId)}`);
+  // Structured rejection — the violations name which invariants failed
+  console.log(`Rejected: ${result.violations.map((v) => v.invariantId)}`);
 }
 ```
 
@@ -227,11 +228,11 @@ if (result.kind === "accepted") {
 | `"registry"` (default) | Compiled RPEG v1 DSL | Production use with full dual-witness |
 
 ```typescript
-import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
-import { loadCompiledRegistry } from "@mcp-tool-shop/registrum/registry";
+import { StructuralRegistrar } from "@mcptoolshop/registrum";
+import { loadInvariantRegistry } from "@mcptoolshop/registrum/registry";
 
 // Registry mode (default) — compiled DSL + legacy as dual witnesses
-const compiledRegistry = loadCompiledRegistry();
+const compiledRegistry = loadInvariantRegistry();
 const registrar = new StructuralRegistrar({ compiledRegistry });
 ```
 
@@ -253,26 +254,26 @@ npx tsx examples/refusal-as-success.ts   # Or run directly
 
 ```typescript
 // Implementation
-import { StructuralRegistrar } from "@mcp-tool-shop/registrum";
+import { StructuralRegistrar } from "@mcptoolshop/registrum";
 
 // Types
 import type {
   State,          // { id, structure, data }
   Transition,     // { from, to, metadata? }
-  RegistrationResult,   // { kind: "accepted" | "refused", ... }
-  Invariant,      // { id, scope, check }
+  RegistrationResult,   // { kind: "accepted" | "rejected", ... }
+  Invariant,      // { id, scope, predicate, failureMode, ... }
   InvariantViolation,   // { invariantId, classification, message }
-} from "@mcp-tool-shop/registrum";
+} from "@mcptoolshop/registrum";
 
 // Invariants
 import {
   INITIAL_INVARIANTS,     // All 11 invariants
-  getInvariantsByScope,   // Filter by "identity" | "lineage" | "ordering"
+  getInvariantsByScope,   // Filter by "state" | "transition" | "registration"
   getInvariantById,       // Lookup by invariant ID
-} from "@mcp-tool-shop/registrum";
+} from "@mcptoolshop/registrum";
 
 // Version
-import { REGISTRUM_VERSION } from "@mcp-tool-shop/registrum";
+import { REGISTRUM_VERSION } from "@mcptoolshop/registrum";
 ```
 
 ### `StructuralRegistrar`
@@ -280,8 +281,9 @@ import { REGISTRUM_VERSION } from "@mcp-tool-shop/registrum";
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `register(transition)` | `RegistrationResult` | Validate and record a state transition |
-| `getState(id)` | `State \| undefined` | Retrieve a registered state by ID |
-| `getHistory()` | `Transition[]` | Full ordered history of accepted transitions |
+| `validate(target)` | `ValidationReport` | Inspect a State or Transition without registering |
+| `listInvariants(scope?)` | `InvariantDescriptor[]` | Return active invariants, optionally filtered by scope |
+| `getLineage(stateId)` | `LineageTrace` | Trace state ancestry from most recent to root |
 | `snapshot()` | `RegistrarSnapshotV1` | Deterministic, content-addressed snapshot |
 
 ---
@@ -322,7 +324,7 @@ See:
 | G | Complete | Governance framework |
 | H | Complete | Registry default, attestation enabled |
 
-**Test coverage**: 279 tests passing across 14 test suites
+**Test coverage**: 282 tests passing across 15 test suites
 
 Development has transitioned to stewardship. Future changes require governance.
 

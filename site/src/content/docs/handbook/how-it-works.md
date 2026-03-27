@@ -30,9 +30,9 @@ Identity invariants ensure that every state in the system is uniquely and perman
 
 | # | What it enforces |
 |---|------------------|
-| 1 | Every state has a **unique** identifier — no two states may share an ID |
-| 2 | Identifiers are **immutable** — once assigned, an ID never changes |
-| 3 | Identifiers are **content-addressed** — the ID is derived from the state's structural content |
+| A.1 | Identifiers are **immutable** — a transition may not alter the identity of an existing state |
+| A.2 | Every state must declare an **explicit**, non-empty identity |
+| A.3 | No two registered states may share the same identity (**unique**) |
 
 These invariants mean you can always point to a specific state and know exactly what it contains. There is no ambiguity about which state is which.
 
@@ -42,10 +42,10 @@ Lineage invariants ensure that the parentage chain between states remains valid 
 
 | # | What it enforces |
 |---|------------------|
-| 4 | Every non-root state has a **valid parent** that exists in the registry |
-| 5 | The lineage graph is **acyclic** — no state can be its own ancestor |
-| 6 | Parent references are **traceable** — you can walk from any state back to its root |
-| 7 | Lineage relationships are **consistent** — a parent's acceptance predates its child's |
+| B.1 | Every transition must **explicitly declare** its parent state, except for root states |
+| B.2 | A transition's parent state must **exist** and be registered |
+| B.3 | A transition may reference only one parent state (**single-parent**) |
+| B.4 | Every accepted transition must extend an **unbroken lineage chain** (continuous) |
 
 These invariants mean you can always reconstruct how a state came to exist. The full history of derivation is preserved.
 
@@ -55,10 +55,10 @@ Ordering invariants ensure that the sequence of accepted transitions is determin
 
 | # | What it enforces |
 |---|------------------|
-| 8 | Order indices are **monotonic** — each new acceptance gets a strictly higher index |
-| 9 | Order indices are **gap-free** — no indices are skipped |
-| 10 | Ordering is **deterministic** — replaying the same transitions produces the same indices |
-| 11 | Order reflects **temporal precedence** — earlier registrations always have lower indices |
+| C.1 | All accepted transitions must be **totally ordered** |
+| C.2 | Ordering must be **deterministic** given identical inputs |
+| C.3 | Order indices must increase **monotonically** |
+| C.4 | Ordering must not depend on state content or meaning (**non-semantic**) |
 
 These invariants mean the sequence of events is unambiguous. Given a snapshot, any party can verify the exact order in which transitions were accepted.
 
@@ -85,11 +85,12 @@ This is not technical debt or a transitional architecture. Dual-witness mode is 
 
 ### Parity evidence
 
-The behavioral equivalence between Registry and Legacy is proven by 274 tests:
+The behavioral equivalence between Registry and Legacy is proven by 91 parity tests:
 
-- **58 parity tests** across all invariant classes — the same transition is evaluated by both engines and the verdicts are compared
-- **12 persistence parity tests** verifying temporal stability — snapshots produce identical results regardless of which engine created them
-- **Replay parity** — live execution and replayed execution produce identical results across both engines
+- **Invariant parity tests** across all classes (identity, lineage, ordering, metadata) -- the same transition is evaluated by both engines and the verdicts are compared
+- **Persistence parity tests** verifying temporal stability -- snapshots produce identical results regardless of which engine created them
+- **Registry-mode parity tests** validating the compiled DSL against TypeScript predicates
+- **Replay parity** -- live execution and replayed execution produce identical results across both engines
 
 ## State transition flow
 
@@ -109,7 +110,7 @@ Registrum provides three persistence capabilities:
 
 ### Snapshot
 
-Call `registrar.snapshot()` to produce a `RegistrarSnapshotV1` — a versioned, content-addressed, deterministically serialized representation of the entire registrar state. Snapshots are self-contained: they include all registered states, the full transition history, and the ordering indices.
+Call `registrar.snapshot()` to produce a `RegistrarSnapshotV1` -- a versioned, deterministically serialized representation of the registrar's structural state. Snapshots contain the registered state IDs, the lineage map (parent relationships), and the ordering assignments. They deliberately exclude semantic data (`state.data`), derived metrics, and caches.
 
 ### Replay
 

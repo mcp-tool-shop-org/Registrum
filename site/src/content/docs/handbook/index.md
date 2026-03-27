@@ -37,6 +37,10 @@ Optional external witnessing via XRPL. Learn how Registrum can emit cryptographi
 
 Complete API reference for the `StructuralRegistrar` class, all exported types, invariant lookup utilities, and the snapshot/replay persistence layer.
 
+### [Beginner's Guide](/Registrum/handbook/beginners/)
+
+New to Registrum? Start here. A step-by-step introduction covering what problem Registrum solves, key terminology, installation, your first registration walkthrough, common patterns, and frequently asked questions.
+
 ## Quick orientation
 
 | Property | What it means |
@@ -49,4 +53,4 @@ Complete API reference for the `StructuralRegistrar` class, all exported types, 
 
 ## Project status
 
-Registrum has reached a stable end-state. All phases (A through H) are complete, with 279 tests passing across 14 test suites. Development has transitioned from active building to stewardship. All future changes require formal governance.
+Registrum has reached a stable end-state. All phases (A through H) are complete, with 282 tests passing across 15 test suites. Development has transitioned from active building to stewardship. All future changes require formal governance.
